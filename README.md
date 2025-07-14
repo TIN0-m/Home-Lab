@@ -44,3 +44,6 @@ This lab provides opportunity to:
 - Fortify Cloud Security Posture: Integrate AWS CloudTrail and GuardDuty findings into the SIEM, providing holistic visibility across the cloud control plane.
 
 # 2. Architecture Overview
+
+<img width="801" height="541" alt="Net Overview" src="https://github.com/user-attachments/assets/f25da4f9-1a90-409a-a3c1-9484179cb15e" />
+
