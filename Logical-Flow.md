@@ -12,6 +12,7 @@ Generates malicious activity and associated telemetry.
 
 **Action:**       
 The Limacharlie agent on the endpoint captures rich telemetry (process creation, network connections, file changes, etc.) related to the Atomic Red Team activity. Limacharlie's built-in rules perform initial detection.
+
 **Output:**           
 High-fidelity endpoint events, logs, and potential alerts.
 
