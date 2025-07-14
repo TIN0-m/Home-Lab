@@ -9,7 +9,7 @@ You execute an Atomic Red Team test (e.g. command and control simulation) on a W
 **Output:**       
 Generates malicious activity and associated telemetry.
 
-## Endpoint Telemetry & Initial Detection (Limacharlie):
+## Endpoint Telemetry and Initial Detection (Limacharlie):
 
 **Action:**       
 The Limacharlie agent on the endpoint captures rich telemetry (process creation, network connections, file changes, etc.) related to the Atomic Red Team activity. Limacharlie's built-in rules perform initial detection.
@@ -17,7 +17,7 @@ The Limacharlie agent on the endpoint captures rich telemetry (process creation,
 **Output:**           
 High-fidelity endpoint events, logs, and potential alerts.
 
-## Log Ingestion & SIEM (Wazuh):
+## Log Ingestion and SIEM (Wazuh):
 
 **Action:**      
 - Wazuh agents on endpoints and servers (including Active Directory) collect system logs, application logs, and any additional logs not covered by Limacharlie
@@ -27,7 +27,7 @@ High-fidelity endpoint events, logs, and potential alerts.
 **Output:**    
 Correlated events, normalized logs, and SIEM alerts.
 
-## Alert Aggregation & Orchestration (Tines):
+## Alert Aggregation and Orchestration (Tines):
 
 **Action:**      
 - Both Limacharlie and Wazuh are configured to send their critical alerts to Tines.
@@ -36,7 +36,7 @@ Correlated events, normalized logs, and SIEM alerts.
 **Output:**         
 Automated workflows initiated.
 
-## Automated Response & Enrichment (Tines orchestrates):
+## Automated Response and Enrichment (Tines orchestrates):
 
 **Action:**         
 - Automatically creating a new alert/case in TheHive, populating it with details from the initial alert.
