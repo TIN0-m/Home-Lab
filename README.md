@@ -62,39 +62,34 @@ Critical for simulating a realistic enterprise environment. It will have a domai
 - Provide authentication.
 
 ## Limacharlie (EDR and Foundational Telemetry):    
-This is your most powerful tool for endpoint visibility and initial detection.
+This tool is for endpoint visibility and initial detection.
 
-Why it's best here: Limacharlie's lightweight, robust agent provides extremely rich endpoint telemetry (process execution, network connections, file system changes, registry, etc.) far beyond what basic Windows Event Logs offer. It's purpose-built for threat detection and response at the endpoint level. It essentially replaces the need for a separate Sysmon agent as its data is similar but often more extensive and easier to consume within Limacharlie's platform.
+Limacharlie's lightweight, robust agent provides extremely rich endpoint telemetry (process execution, network connections, file system changes, registry, etc.) far beyond what basic Windows Event Logs offer. It's purpose-built for threat detection and response at the endpoint level. It essentially replaces the need for a separate Sysmon agent as its data is similar but often more extensive and easier to consume.
 
-Key benefit: When you run Atomic Red Team attacks, Limacharlie will be your primary sensor detecting these activities. Its rule engine allows you to write custom detections for ATT&CK techniques.
+When the Atomic Red Team attacks are ran, Limacharlie will be the primary sensor detecting these activities. Its rule engine allows me to write custom detections for ATT&CK techniques.
 
-Wazuh (SIEM & HIDS): While Limacharlie offers some SIEM-like capabilities, Wazuh excels as an open-source SIEM and Host Intrusion Detection System (HIDS).
+## Wazuh (SIEM and HIDS):
+This tool will work as a SIEM and Host Intrusion Detection System (HIDS).
 
-Why it's best here: It's excellent for collecting, normalizing, and analyzing logs from diverse sources beyond just endpoints (e.g., Active Directory logs, AWS CloudTrail, VPC Flow Logs, firewall logs). It has a strong rule set for common attack patterns and compliance. It also provides file integrity monitoring (FIM) and vulnerability detection on the host.
+It's excellent for collecting, normalizing, and analyzing logs from diverse sources beyond just endpoints (e.g., Active Directory logs, AWS CloudTrail, VPC Flow Logs, firewall logs). It has a strong rule set for common attack patterns and compliance.
 
-Integration: Limacharlie alerts can be forwarded to Wazuh for broader correlation, and Wazuh can collect AD logs directly from your domain controller.
+Limacharlie alerts can be forwarded to Wazuh for broader correlation, and Wazuh will also collect AD logs directly from the domain controller.
 
-TheHive (Case Management & Incident Response): The central hub for your incident response process.
+## TheHive (Case Management & Incident Response):
+This tool will be my central hub for the incident response process.
 
-Why it's best here: It provides structure for investigations, allows analysts to collaborate, manage observables, and track the status of incidents from creation to closure. It's an indispensable tool for a functional SOC.
+It provides structure for investigations, allows analysts to collaborate, manage observables, and track the status of incidents from creation to closure. 
 
-Tines (Dedicated SOAR - Automation & Orchestration): This will be your powerhouse for automating complex workflows.
+## Tines (Dedicated SOAR - Automation & Orchestration):
+This tool will be used for automating complex workflows. It allows you to create intricate playbooks that connect all your tools. Limacharlie and Wazuh will be configured to send alerts to Tines. Tines will then orchestrates actions like:
 
-Why it's best here: While Limacharlie has automation, Tines is a dedicated SOAR platform with a highly visual, no-code/low-code builder. It allows you to create intricate playbooks that connect all your tools.
+- Automatically creating cases in TheHive.
+- Enriching alerts with external threat intelligence.
+- Performing automated response actions on Active Directory (e.g., disabling users).
+- Notifying team members.
 
-Key benefit: You can configure Limacharlie and Wazuh to send alerts to Tines. Tines then orchestrates actions like:
+## Atomic Red Team (Attack Simulation):
+Your primary tool for generating realistic attack data.
 
-Automatically creating cases in TheHive.
-
-Enriching alerts with external threat intelligence.
-
-Performing automated response actions on Active Directory (e.g., disabling users).
-
-Notifying team members via chat (e.g., Slack if you add it).
-
-Simplicity vs. Power: Limacharlie's automation is powerful for its own data. Tines is powerful for orchestrating across all your different tools. For a realistic simulation, having a dedicated SOAR tool like Tines is invaluable to practice automating response actions.
-
-Atomic Red Team (Attack Simulation): Your primary tool for generating realistic attack data.
-
-Why it's best here: It provides a structured way to simulate specific MITRE ATT&CK techniques, allowing you to test your detection capabilities in Limacharlie and Wazuh, and then your automated responses in Tines.
+It provides a structured way to simulate specific MITRE ATT&CK techniques, allowing me to test the detection capabilities in Limacharlie and Wazuh, and the automated responses in Tines.
 
