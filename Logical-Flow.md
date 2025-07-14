@@ -1,6 +1,8 @@
 # Logical Flow 
 This section will provide a clear overview of the event and incident lifecycle as it unfolds in the simulated Security Operations Center (SOC) environment.
 
+<img width="870" height="971" alt="Logical Flow" src="https://github.com/user-attachments/assets/817ab210-8a23-47fc-8c12-695768e65eee" />
+
 ## Attack Simulation (Atomic Red Team):
 
 **Action:**      
