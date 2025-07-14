@@ -20,7 +20,7 @@ High-fidelity endpoint events, logs, and potential alerts.
 ## Log Ingestion & SIEM (Wazuh):
 
 **Action:**      
-- Wazuh agents on endpoints and servers (including Active Directory) collect system logs, application logs, and any additional logs not covered by Limacharlie (or could be configured to send Limacharlie alerts).
+- Wazuh agents on endpoints and servers (including Active Directory) collect system logs, application logs, and any additional logs not covered by Limacharlie
 - Wazuh also ingests AWS CloudTrail, VPC Flow Logs, and Active Directory security logs.
 - Wazuh's rules engine processes these logs for broader correlation and threat detection.
 
