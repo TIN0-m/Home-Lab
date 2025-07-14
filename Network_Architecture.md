@@ -1,4 +1,4 @@
-# 2. Architecture Overview
+# Architecture Overview
 
 My SOC lab resides within a meticulously crafted AWS Virtual Private Cloud (VPC), engineered for security, isolation, and scalability. This isn't just a collection of VMs; it's a production-ready network design for a secure enterprise.
 Key Architectural Principles Applied:
