@@ -74,6 +74,54 @@ For this lab, resources are primarily deployed within a single AZ for cost-effic
 
 <img width="801" height="541" alt="FINAL" src="https://github.com/user-attachments/assets/a0a66fe6-08fb-4ddc-9a69-889478cebd28" />
 
+# public-subnet (10.0.1.0/24): 
+
+Purpose: Houses components requiring direct internet access.
+
+Components: 
+
+- **Routing Table:**      
+Explicitly routes 0.0.0.0/0 (all internet traffic) to the Internet Gateway (IGW).
+  
+- **Internet Gateway:**          
+The VPC's "front door" to the internet. Attached directly to the VPC, it allows public traffic in and out.
+
+- **NAT Gateway:**    
+The controlled egress point for private subnets. Instances in private subnets cannot initiate direct outbound internet connections; they must route through here
+
+<img width="801" height="431" alt="Public Subnet" src="https://github.com/user-attachments/assets/4248011d-0aed-4e0b-a577-fc83e278ea88" />
+
+# Private subnet 1: Corporate Network 
+
+Purpose: Hosts the assets that mimic a typical enterprise environment – your "victims."
+
+Route Table: Routes 0.0.0.0/0 to the NAT Gateway (NAT GW) for all outbound internet access.
+
+Components (EC2 Instances):
+
+Active Directory Domain Controller (AD DC):
+
+OS: Windows Server (e.g., 2022).
+
+Roles: Core identity and access management: Active Directory Domain Services (AD DS) and DNS Server. The backbone of the simulated enterprise.
+
+Agents: Instrumented with Wazuh Agent and Limacharlie Agent for deep visibility into AD activities.
+
+Security Group (SOC-Lab-AD-DC-SG): Inbound: RDP (3389) from Jump Box, LDAP/S (389, 636), Kerberos (88), DNS (53) from other Enterprise Network SGs and SOC Tooling SGs. Outbound: All traffic to Enterprise and SOC Tooling SGs, and NAT GW.
+
+Windows Endpoints (2x):
+
+OS: Windows Client (e.g., Windows 10/11).
+
+Domain: Authenticated members of the AD domain. These are your primary targets for Atomic Red Team simulations.
+
+Agents: Wazuh Agent (for system logs, event logs) and Limacharlie Agent (for granular process, network, and file telemetry) installed.
+
+Sysmon (Optional): Deployed for additional, rich Windows event logging if Limacharlie's native telemetry isn't sufficient for specific detection needs (though Limacharlie often supersedes it).
+
+Security Group (SOC-Lab-Win-Endpoint-SG): Inbound: RDP (3389) from Jump Box, DNS (53) from AD DC. Outbound: To AD DC, Wazuh Manager, and NAT GW.
+
+<img width="631" height="381" alt="Enterprise Subnet" src="https://github.com/user-attachments/assets/ded38939-50fd-4341-99ae-24d4de7ad092" />
 
 
 
