@@ -5,6 +5,7 @@ This section will provide a clear overview of the event and incident lifecycle a
 
 **Action:**      
 You execute an Atomic Red Team test (e.g. command and control simulation) on a Windows endpoint within your VPC.
+
 **Output:**       
 Generates malicious activity and associated telemetry.
 
