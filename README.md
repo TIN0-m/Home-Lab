@@ -76,6 +76,7 @@ For this lab, resources are primarily deployed within a single AZ for cost-effic
 
 # public-subnet (10.0.1.0/24): 
 
+<img width="801" height="431" alt="Public Subnet" src="https://github.com/user-attachments/assets/4248011d-0aed-4e0b-a577-fc83e278ea88" />
 Purpose: Houses components requiring direct internet access.
 
 Components: 
@@ -89,10 +90,9 @@ The VPC's "front door" to the internet. Attached directly to the VPC, it allows 
 - **NAT Gateway:**    
 The controlled egress point for private subnets. Instances in private subnets cannot initiate direct outbound internet connections; they must route through here
 
-<img width="801" height="431" alt="Public Subnet" src="https://github.com/user-attachments/assets/4248011d-0aed-4e0b-a577-fc83e278ea88" />
 
 # Private subnet 1: Corporate Network 
-
+<img width="631" height="381" alt="Enterprise Subnet" src="https://github.com/user-attachments/assets/ded38939-50fd-4341-99ae-24d4de7ad092" />
 Purpose: Hosts the assets that mimic a typical enterprise environment – your "victims."
 
 Route Table: Routes 0.0.0.0/0 to the NAT Gateway (NAT GW) for all outbound internet access.
@@ -121,7 +121,47 @@ Sysmon (Optional): Deployed for additional, rich Windows event logging if Limach
 
 Security Group (SOC-Lab-Win-Endpoint-SG): Inbound: RDP (3389) from Jump Box, DNS (53) from AD DC. Outbound: To AD DC, Wazuh Manager, and NAT GW.
 
-<img width="631" height="381" alt="Enterprise Subnet" src="https://github.com/user-attachments/assets/ded38939-50fd-4341-99ae-24d4de7ad092" />
 
+
+# Private subnet 2: The Security Operations Center Hub 
+<img width="761" height="251" alt="SOC Hub" src="https://github.com/user-attachments/assets/37a53847-97b4-4da1-bf73-1e34f947eced" />
+
+Purpose: Dedicated to hosting the core security tools, isolated from the simulated enterprise.
+
+Route Table: Routes 0.0.0.0/0 to the NAT Gateway (NAT GW) for all outbound internet access (e.g., pulling threat intelligence, updates).
+
+Components (EC2 Instances):
+
+Wazuh Manager/Server:
+
+OS: Linux (e.g., Ubuntu LTS).
+
+Components: Wazuh Manager (brain), OpenSearch/Elasticsearch (data lake), Kibana/Dashboards (visualization & alerting UI).
+
+Security Group (SOC-Lab-Wazuh-Manager-SG): Inbound: Wazuh Agent communication (TCP 1514 - agent enrollment/data, 55000 - agent registration), SSH (22) from Jump Box, Elasticsearch/OpenSearch API (9200) from Tines, Kibana (443) from Jump Box. Outbound: To Tines (for alerts), and NAT GW.
+
+TheHive:
+
+OS: Linux.
+
+Components: TheHive application, its database (e.g., Elasticsearch/Cassandra), and potentially Cortex (for automated analysis of observables).
+
+Security Group (SOC-Lab-TheHive-SG): Inbound: SSH (22) from Jump Box, Web UI (9000/443) from Jump Box/Tines. Outbound: To Tines (if Tines pulls cases), and NAT GW.
+
+Tines:
+
+OS: Linux (if self-hosted).
+
+Components: The Tines SOAR platform itself.
+
+Key Detail: While self-hosting is possible (as depicted), for a lab environment, utilizing a Tines Cloud Free/Trial account significantly simplifies deployment and management, allowing you to focus on automation logic. Your agents in AWS would communicate with the cloud instance via the NAT Gateway.
+
+Security Group (SOC-Lab-Tines-SG): (For self-hosted) Inbound: SSH (22) from Jump Box, Webhook/API ingress (443/8080) from Wazuh Manager and Limacharlie Cloud Platform. Outbound: To TheHive, AD DC, and NAT GW (for external APIs).
+
+Limacharlie Cloud Platform (SaaS):
+
+Purpose: This is a cloud-native, managed service. You DO NOT host this.
+
+Interaction: Your Limacharlie agents on your EC2 instances connect securely to your dedicated Limacharlie tenant over the internet (via the NAT Gateway). You configure Limacharlie to send high-fidelity endpoint alerts via webhooks out to your Tines instance.
 
 
