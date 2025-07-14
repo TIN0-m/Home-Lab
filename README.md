@@ -45,5 +45,35 @@ This lab provides opportunity to:
 
 # 2. Architecture Overview
 
-<img width="801" height="541" alt="Net Overview" src="https://github.com/user-attachments/assets/f25da4f9-1a90-409a-a3c1-9484179cb15e" />
+My SOC lab resides within a meticulously crafted AWS Virtual Private Cloud (VPC), engineered for security, isolation, and scalability. This isn't just a collection of VMs; it's a production-ready network design for a secure enterprise.
+Key Architectural Principles Applied:
+
+- **Principle of Least Privilege:**     
+ Granular IAM roles and stringent Security Group rules enforce minimal necessary access.
+
+- **Network Segmentation:**    
+ Logical isolation via private subnets to contain potential breaches and control traffic flow.
+
+- **Defense in Depth:**
+Multiple layers of security controls, from network ACLs to host-based agents.
+
+- **Observability:**
+ Comprehensive logging of all cloud control plane and data plane activities.
+
+# Network Components :
+
+AWS VPC
+soc-lab-vpc (10.0.0.0/16): This foundational block dictates the entire IP addressing scheme. It's where every resource lives, meticulously controlled.
+
+Default DHCP Options Set: Essential for DNS resolution and domain information, automatically assigned.
+
+Default Network ACL (NACL): A stateless firewall at the subnet level. While default allows all, custom NACLs provide an additional, optional layer of ingress/egress filtering, complementing Security Groups.
+
+3.2. Availability Zones (AZs) (Resilience & Redundancy)
+For this lab, resources are primarily deployed within a single AZ for cost-efficiency and simplified initial setup (e.g., eu-west-1a). 
+
+<img width="801" height="541" alt="FINAL" src="https://github.com/user-attachments/assets/a0a66fe6-08fb-4ddc-9a69-889478cebd28" />
+
+
+
 
