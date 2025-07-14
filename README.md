@@ -155,4 +155,17 @@ Route Table: Routes 0.0.0.0/0 to the NAT Gateway (NAT GW) for all outbound inter
 -OS : SaaS
 Interaction: Your Limacharlie agents on your EC2 instances connect securely to your dedicated Limacharlie tenant over the internet (via the NAT Gateway). You configure Limacharlie to send high-fidelity endpoint alerts via webhooks out to your Tines instance.
 
+# Private Subnet 3 : Management
+
+<img width="481" height="241" alt="Management" src="https://github.com/user-attachments/assets/ec47bcae-7934-4c7a-b3e0-c79d7aa4098a" />
+
+**Purpose:** 
+- A highly restricted subnet for administrative access.
+- Route Table: Routes 0.0.0.0/0 to the NAT Gateway (NAT GW) for all outbound internet access.
+
+**Component,Management Jump Box:**
+- OS: Windows Server (for RDP to other Windows instances) or Linux (for SSH, with RDP client).
+- Single, secure entry point into the private network. This drastically reduces internet-facing attack surface.
+-Security Group (SOC-Lab-JumpBox-SG): EXTREMELY RESTRICTIVE. Inbound: Only allows SSH (22) or RDP (3389) from YOUR SPECIFIC PUBLIC IP ADDRESS (X.X.X.X/32). Outbound: RDP (3389) to Windows Endpoints/AD DC, SSH (22) to Linux Server/Wazuh/TheHive/Tines.
+
 
