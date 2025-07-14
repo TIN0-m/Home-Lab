@@ -27,11 +27,11 @@ Default Network ACL (NACL): A stateless firewall at the subnet level. While defa
 3.2. Availability Zones (AZs) (Resilience & Redundancy)
 For this lab, resources are primarily deployed within a single AZ for cost-efficiency and simplified initial setup (e.g., eu-west-1a). 
 
-<img width="801" height="541" alt="FINAL" src="https://github.com/user-attachments/assets/a0a66fe6-08fb-4ddc-9a69-889478cebd28" />
+<img width="801" height="541" alt="FINAL" src="https://github.com/user-attachments/assets/1545f8b7-19bb-413c-a36b-921117602e9c" />
 
 # public-subnet (10.0.1.0/24): 
 
-<img width="801" height="431" alt="Public Subnet" src="https://github.com/user-attachments/assets/4248011d-0aed-4e0b-a577-fc83e278ea88" />
+<img width="801" height="431" alt="Public Subnet" src="https://github.com/user-attachments/assets/7d60aec5-9367-4f84-afb9-b70eaaa2a6c8" />
 
 **Purpose:**   
 Houses components requiring direct internet access.
@@ -49,7 +49,8 @@ The controlled egress point for private subnets. Instances in private subnets ca
 
 
 # Private subnet 1: Corporate Network 
-<img width="631" height="381" alt="Enterprise Subnet" src="https://github.com/user-attachments/assets/ded38939-50fd-4341-99ae-24d4de7ad092" />
+
+<img width="631" height="381" alt="Enterprise Subnet" src="https://github.com/user-attachments/assets/9b4e856b-743a-47d5-9ef6-4a83f1bd2a3a" />
 
 **Purpose:**     
 Hosts the assets that are found in a typical enterprise environment 
@@ -77,7 +78,8 @@ Instrumented with Wazuh Agent and Limacharlie Agent for deep visibility into AD 
 
 
 # Private subnet 2: The Security Operations Center Hub 
-<img width="761" height="251" alt="SOC Hub" src="https://github.com/user-attachments/assets/37a53847-97b4-4da1-bf73-1e34f947eced" />
+
+<img width="761" height="251" alt="SOC Hub" src="https://github.com/user-attachments/assets/24222d32-f2ef-46d6-8816-c59f875ade58" />
 
 **Purpose:**      
 Dedicated to hosting the core security tools, isolated from the simulated enterprise.
@@ -107,7 +109,7 @@ Interaction: Your Limacharlie agents on your EC2 instances connect securely to y
 
 # Private Subnet 3 : Management
 
-<img width="481" height="241" alt="Management" src="https://github.com/user-attachments/assets/ec47bcae-7934-4c7a-b3e0-c79d7aa4098a" />
+<img width="481" height="241" alt="Management" src="https://github.com/user-attachments/assets/96285c0f-fd5d-4b4a-bc64-6f0652b01365" />
 
 **Purpose:** 
 - A highly restricted subnet for administrative access.
