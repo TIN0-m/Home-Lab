@@ -6,11 +6,13 @@ personal sandbox for mastering the entire incident response lifecycle, from the 
 
 2. Architecture Overview
 
-3. Key Components
+3. Logical Flow
 
 4. Deployment Guide
+   
+5. Security groups and AWS services 
 
-5. Usage & Scenarios
+7. Usage & Scenarios
 
 # 1. Introduction 
 
