@@ -1,39 +1,41 @@
-Hey, that's a great question! Our AWS SOC Lab project touches on several MITRE ATT&CK techniques and aligns with multiple ISO 27001 principles, directly addressing how to detect, respond, and manage security incidents.
+# MITRE ATT&CK AND ISO27001 
+This Lab touches on several MITRE ATT&CK techniques and aligns with multiple ISO 27001 principles, directly addressing how to detect, respond, and manage security incidents.
 
-Let's break down the coverage.
+## MITRE ATT&CK Coverage
+The focuses heavily on Defense Evasion, Collection, and aspects of Discovery and Exfiltration, primarily from the defender's perspective. By simulating attacks and collecting logs, we're building capabilities to identify these techniques.
 
-MITRE ATT&CK Coverage 🛡️
-Our lab focuses heavily on Defense Evasion, Collection, and aspects of Discovery and Exfiltration, primarily from the defender's perspective. By simulating attacks and collecting logs, we're building capabilities to identify these techniques.
+Here are some specific **ATT&CK** techniques that are addressed:
 
-Here are some specific ATT&CK techniques that the lab helps address:
+### Discovery (TA0007)
+**T1087.001 Account Discovery: Local Account and T1087.002 Account Discovery: Domain Account:**      
+When an attacker is on an endpoint, they often try to find user and administrator accounts. Your Wazuh agents collecting Windows security event logs and Limacharlie detecting unusual enumeration attempts directly target these.
 
-1. Discovery (TA0007)
-T1087.001 Account Discovery: Local Account & T1087.002 Account Discovery: Domain Account: When an attacker is on an endpoint, they often try to find user and administrator accounts. Your Wazuh agents collecting Windows security event logs (like Event ID 4720 for account creation, 4732 for group membership changes) and Limacharlie detecting unusual enumeration attempts directly target these.
+**T1046 Network Service Discovery:**     
+Attackers scan for open ports. Wazuh can be configured to alert on common port scanning activities from agents.
 
-T1046 Network Service Discovery: Attackers scan for open ports. Wazuh can be configured to alert on common port scanning activities from agents.
+**T1018 Remote System Discovery:**     
+Looking for other machines on the network. Wazuh can log and alert on network connection attempts between endpoints.
 
+### Collection (TA0009)
+**T1005 Data from Local System:**    
+Attackers collecting sensitive files from the compromised host. Wazuh can detect unauthorized modifications or access to critical files.
 
-T1018 Remote System Discovery: Looking for other machines on the network. Wazuh can log and alert on network connection attempts between endpoints.
+**T1020 Automated Collection:**         
+Tools that automatically gather data. Both Wazuh and Limacharlie are designed to automatically collect system logs, process information, and network activity, which are the sources an attacker would target.
 
+### Defense Evasion (TA0005)
+**T1070.001 Indicator Removal: Clear Windows Event Logs:**      
+A common attacker tactic. The Wazuh agents are configured to forward logs in real-time. If an attacker attempts to clear local logs, this event would already be sent to the Wazuh Manager, providing an alert even if the local log is wiped.
 
-2. Collection (TA0009)
-T1005 Data from Local System: Attackers collecting sensitive files from the compromised host. Wazuh FIM (File Integrity Monitoring) can detect unauthorized modifications or access to critical files. Limacharlie's endpoint detection capabilities are excellent for this.
+**T1562 Impair Defenses:**     
+This is a broad category, and the lab aims to detect attempts at disabling security tools or firewalls. Wazuh and Limacharlie can monitor service states and system configurations for changes.
 
-
-T1020 Automated Collection: Tools that automatically gather data. Both Wazuh and Limacharlie are designed to automatically collect system logs, process information, and network activity, which are the sources an attacker would target.
-
-3. Defense Evasion (TA0005)
-T1070.001 Indicator Removal: Clear Windows Event Logs: A common attacker tactic. Your Wazuh agents are configured to forward logs in real-time. If an attacker attempts to clear local logs (Event ID 1102), this event would (ideally) already be sent to the Wazuh Manager, providing an alert even if the local log is wiped. Limacharlie can also detect these system-level manipulations.
-
-T1562 Impair Defenses: This is a broad category, and the lab aims to detect attempts at disabling security tools or firewalls. Wazuh and Limacharlie can monitor service states and system configurations for changes.
-
-
-4. Exfiltration (TA0010)
+### Exfiltration (TA0010)
 T1041 Exfiltration Over C2 Channel: Data being sent out over the same channel used for command and control. While our lab doesn't build a C2, by monitoring network traffic via VPC Flow Logs ingested into Wazuh, you could detect anomalous outbound data flows (e.g., large data transfers to unusual external IPs).
 
 T1048 Exfiltration Over Alternative Protocol: Using common protocols (like DNS, HTTP/S for non-standard purposes). Again, VPC Flow Logs combined with Wazuh's analysis capabilities are key to spotting unusual patterns.
 
-5. Command and Control (TA0011)
+### Command and Control (TA0011)
 T1071 Application Layer Protocol: Using common protocols like HTTP, DNS for C2. VPC Flow Logs and Limacharlie's network visibility can help identify unusual connections to known malicious domains or IPs.
 
 ISO 27001 Principles Covered 🔒
