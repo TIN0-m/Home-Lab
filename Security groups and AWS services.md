@@ -39,7 +39,7 @@ The AWS services are there to provide with extra security measures. By combining
 
 ### AWS CloudTrail
 
-- AWS CloudTrail is an audit log of all actions that happen in the AWS environment. Every time someone logs into the AWS console, runs a command via the AWS CLI, or an AWS service makes an API call, CloudTrail logs it automatically and captures management events. It provides a 90-day event history in the console, allowing you to quickly look up recent activities. It can also enable log file integrity validation, using hashing and digital signatures to ensure that your log files haven't been tampered with.
+AWS CloudTrail is an audit log of all actions that happen in the AWS environment. Every time someone logs into the AWS console, runs a command via the AWS CLI, or an AWS service makes an API call, CloudTrail logs it automatically and captures management events. It provides a 90-day event history in the console, allowing you to quickly look up recent activities. It can also enable log file integrity validation, using hashing and digital signatures to ensure that your log files haven't been tampered with.
 
 #### Why it's crucial: 
 
