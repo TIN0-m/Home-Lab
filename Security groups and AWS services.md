@@ -1,38 +1,36 @@
 # Security Groups and AWS services
 
 The Security Groups act as a gatekeeper right in front of the EC2 instances. It inspects every single piece of network traffic trying to reach or leave that instance and decides whether to allow or deny it based on a set of rules you define.
-Here's a breakdown of their characteristics:
+**Here's a breakdown of their characteristics:**
 
 ## Instance-Level Control
-Security Groups are associated directly with an individual network interface, and by extension, the instance. This gives you granular control over each specific instance's traffic.
+The Security Groups are associated directly with each of the subnets that are in the VPC. This gives you granular control over each specific instance's traffic as the Subnets have the overal instances that are being used.
 
-## Inbound Traffic
-When you create a new Security Group, by default, it denies all inbound traffic. You must explicitly add rules to allow any incoming connections. This adheres to the principle of least privilege by default, which is a core security best practice.
+## Inbound Traffic and Outbound Traffic
+By adding rules to allow and deny any connections and specifying which ports can do this adheres to the **principle of least privilege**, which is a core security best practice.
 
-## Outbound Traffic
-Conversely, by default, a new Security Group typically allows all outbound traffic. While convenient, for a robust security posture like a SOC lab, you'll want to modify this to restrict outbound access to only what's necessary (e.g., only allowing HTTPS to specific update servers, or agent communication to your Wazuh Manager).
-
-## Rules: Allow Only
-Security Group rules are always permissive (allow rules only). You cannot create a rule to explicitly "deny" traffic. If traffic doesn't match an "allow" rule, it's implicitly denied. This is a crucial difference from traditional firewalls and AWS Network ACLs, which can have explicit "deny" rules.
-
-## Stateful 🧠
+## Stateful
 This is a very important characteristic. Security Groups are stateful. This means if you allow an inbound connection (e.g., SSH on port 22), the return traffic for that connection is automatically allowed back out, even if you don't have an explicit outbound rule for it. Similarly, if you allow an outbound connection (e.g., an instance initiating a web request on port 443), the return traffic for that request is automatically allowed back in. This simplifies rule management significantly.
 
 ## Rule Evaluation
 When an instance has multiple Security Groups associated with it, all the rules from all associated Security Groups are aggregated to form one logical set of rules. AWS evaluates all these rules before deciding whether to allow the traffic. There's no specific order of precedence for rules within a Security Group, as all allow rules are considered.
 
 ## Security Groups in Your SOC Lab
-In your SOC Lab, Security Groups are critical:
+These are the Security groups that are being implemented into the lab
 
-SG: SOC-Lab-JumpBox-SG: Allows inbound SSH (port 22) or RDP (port 3389) only from your whitelisted public IP address, and allows outbound SSH/RDP to your private instances.
+**JumpBox Security Group:**        
+Allows inbound SSH or RDP allows outbound SSH/RDP to your private instances.
 
-SG: SOC-Lab-AD-DC-SG: Allows inbound LDAP, Kerberos, DNS from your Windows/Linux endpoints (by referencing their Security Groups), and potentially outbound access for updates via the NAT Gateway.
+**Active Directory Security Group:**       
+Allows inbound LDAP, Kerberos, DNS from your Windows/Linux endpoints, and potentially outbound access for updates via the NAT Gateway.
 
-SG: SOC-Lab-Win-Endpoint-SG: Allows inbound domain traffic from the AD DC and outbound traffic for agent communication (Wazuh, Limacharlie) and updates.
+**Coperate Network Security Group:**     
+Allows inbound domain traffic from Active Directory and outbound traffic for agent communication (Wazuh, Limacharlie) and updates.
 
-SG: SOC-Lab-Wazuh-Manager-SG: Allows inbound agent communication (ports 1514, 55000) from your endpoints and outbound communication for alerts to Tines or external services.
+**Wazuh Security Group:**      
+Allows inbound agent communication from your endpoints and outbound communication for alerts to Tines or external services.
 
-By meticulously configuring these Security Groups, you create a robust instance-level firewalling system that strictly controls the communication pathways within and out of your VPC, a cornerstone of your lab's security.
+By meticulously configuring these Security Groups, a robust instance-level firewalling system that strictly controls the communication pathways within and out of the VPC is created.
 
 ## AWS CloudTrail:
 
@@ -58,7 +56,7 @@ Configuration: Simply enable it in your AWS account.
 
 Integration: GuardDuty findings can be automatically sent to CloudWatch Events, which can then trigger a Lambda function to push to Wazuh or directly into Tines, enriching your SIEM with high-fidelity, AWS-specific threat intelligence.
 
-## 3.6. IAM Roles & Policies (The Gatekeepers of Access)
+## IAM Roles & Policies (The Gatekeepers of Access)
 Purpose: Defines granular permissions for EC2 instances to interact with other AWS services. This prevents instances from having overly permissive credentials.
 
 Key Roles:
