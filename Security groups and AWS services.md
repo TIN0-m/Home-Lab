@@ -1,118 +1,56 @@
-Phase 3: AWS Security Groups (Firewalls for Instances) 🔒
-We'll create the necessary Security Groups (SGs) to control traffic to and from your EC2 instances.
+How Security Groups Work as Firewalls
+Think of a Security Group as a bouncer or a gatekeeper right in front of your EC2 instance (or RDS database, Load Balancer, etc.). It inspects every single piece of network traffic trying to reach or leave that instance and decides whether to allow or deny it based on a set of rules you define.
 
-Create Security Groups:
+Here's a breakdown of their key characteristics:
 
-Go to the EC2 dashboard.
+1. Instance-Level Control
+Unlike Network Access Control Lists (NACLs) which operate at the subnet level, Security Groups are associated directly with an individual network interface, and by extension, the instance. This gives you granular control over each specific instance's traffic.
 
-In the left navigation pane, under "Network & Security," click "Security Groups."
 
-Click "Create security group."
+2. Default Deny (Inbound)
+When you create a new Security Group, by default, it denies all inbound traffic. You must explicitly add rules to allow any incoming connections. This adheres to the principle of least privilege by default, which is a core security best practice.
 
-Repeat this for each SG listed below. Ensure you select your SOC-Lab-VPC for each.
+3. Default Allow (Outbound)
+Conversely, by default, a new Security Group typically allows all outbound traffic. While convenient, for a robust security posture like a SOC lab, you'll want to modify this to restrict outbound access to only what's necessary (e.g., only allowing HTTPS to specific update servers, or agent communication to your Wazuh Manager).
 
-a. SOC-Lab-JumpBox-SG (Critical for Initial Access)
+4. Rules: Allow Only
+Security Group rules are always permissive (allow rules only). You cannot create a rule to explicitly "deny" traffic. If traffic doesn't match an "allow" rule, it's implicitly denied. This is a crucial difference from traditional firewalls and AWS Network ACLs, which can have explicit "deny" rules.
 
-Description: Allows secure RDP/SSH access to the Jump Box.
 
-Inbound rules:
+5. Stateful 🧠
+This is a very important characteristic. Security Groups are stateful. This means if you allow an inbound connection (e.g., SSH on port 22), the return traffic for that connection is automatically allowed back out, even if you don't have an explicit outbound rule for it. Similarly, if you allow an outbound connection (e.g., an instance initiating a web request on port 443), the return traffic for that request is automatically allowed back in. This simplifies rule management significantly.
 
-Type: RDP (Port 3389)
+6. Rule Evaluation
+When an instance has multiple Security Groups associated with it, all the rules from all associated Security Groups are aggregated to form one logical set of rules. AWS evaluates all these rules before deciding whether to allow the traffic. There's no specific order of precedence for rules within a Security Group, as all allow rules are considered.
 
-Source: "My IP" (AWS will auto-detect your current public IP. If your IP changes, you'll need to update this, or use a CIDR for your home network).
 
-Add another rule if using Linux Jump Box: Type: SSH (Port 22), Source: "My IP".
+7. Rule Criteria
+You define rules based on:
 
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - this is temporary, we'll refine it later.
+Protocol: TCP, UDP, ICMP, or All Traffic.
 
-b. SOC-Lab-AD-DC-SG
+Port Range: Specific ports (e.g., 22 for SSH, 80 for HTTP, 443 for HTTPS) or a range of ports.
 
-Description: Security Group for Active Directory Domain Controller.
+Source/Destination:
 
-Inbound rules:
+Individual IP addresses (e.g., 203.0.113.1/32)
 
-Type: RDP (Port 3389), Source: SOC-Lab-JumpBox-SG (select by SG ID).
+CIDR blocks (e.g., 192.168.1.0/24)
 
-Type: LDAP (Port 389), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
+Other Security Groups: A powerful feature! You can reference another Security Group as a source or destination, meaning "allow traffic from/to any instance that is associated with this other Security Group." This is incredibly useful for allowing communication between tiers (e.g., web server SG allows traffic to database server SG).
 
-Type: LDAPS (Port 636), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
+Security Groups in Your SOC Lab
+In your SOC Lab, Security Groups are critical:
 
-Type: Kerberos (Port 88), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
+SG: SOC-Lab-JumpBox-SG: Allows inbound SSH (port 22) or RDP (port 3389) only from your whitelisted public IP address, and allows outbound SSH/RDP to your private instances.
 
-Type: DNS (Port 53), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
+SG: SOC-Lab-AD-DC-SG: Allows inbound LDAP, Kerberos, DNS from your Windows/Linux endpoints (by referencing their Security Groups), and potentially outbound access for updates via the NAT Gateway.
 
-Later, you'll add rules from SOC Tooling SGs if they need to query AD.
+SG: SOC-Lab-Win-Endpoint-SG: Allows inbound domain traffic from the AD DC and outbound traffic for agent communication (Wazuh, Limacharlie) and updates.
 
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
+SG: SOC-Lab-Wazuh-Manager-SG: Allows inbound agent communication (ports 1514, 55000) from your endpoints and outbound communication for alerts to Tines or external services.
 
-c. SOC-Lab-Win-Endpoint-SG
-
-Description: Security Group for Windows Endpoints.
-
-Inbound rules:
-
-Type: RDP (Port 3389), Source: SOC-Lab-JumpBox-SG.
-
-Type: DNS (Port 53), Source: SOC-Lab-AD-DC-SG.
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
-
-d. SOC-Lab-Lin-Server-SG (If including Linux Server)
-
-Description: Security Group for Linux Server.
-
-Inbound rules:
-
-Type: SSH (Port 22), Source: SOC-Lab-JumpBox-SG.
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
-
-e. SOC-Lab-Wazuh-Manager-SG
-
-Description: Security Group for Wazuh Manager components.
-
-Inbound rules:
-
-Type: SSH (Port 22), Source: SOC-Lab-JumpBox-SG.
-
-Type: Custom TCP (Port 1514 - Wazuh agent registration), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-
-Type: Custom TCP (Port 55000 - Wazuh agent communication), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-
-Type: Custom TCP (Port 9200 - OpenSearch/Elasticsearch API), Source: SOC-Lab-Tines-SG (you'll create this later).
-
-Type: HTTPS (Port 443 - Kibana Web UI), Source: SOC-Lab-JumpBox-SG.
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
-
-f. SOC-Lab-TheHive-SG
-
-Description: Security Group for TheHive.
-
-Inbound rules:
-
-Type: SSH (Port 22), Source: SOC-Lab-JumpBox-SG.
-
-Type: Custom TCP (Port 9000 - TheHive Web UI), Source: SOC-Lab-JumpBox-SG and SOC-Lab-Tines-SG (for Tines to connect).
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
-
-g. SOC-Lab-Tines-SG (If self-hosting Tines)
-
-Description: Security Group for Tines.
-
-Inbound rules:
-
-Type: SSH (Port 22), Source: SOC-Lab-JumpBox-SG.
-
-Type: HTTPS (Port 443 or specific Tines webhook port, e.g., 8080), Source: SOC-Lab-Wazuh-Manager-SG.
-
-If using Limacharlie Cloud Platform's direct webhook, you might need to allow HTTPS from 0.0.0.0/0 on a specific Tines webhook port, but this is less secure. Better to route through an authenticated proxy or use Tines cloud which handles this.
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
-
-3.5. AWS Logging & Monitoring Services (The Eyes & Ears of the SOC)
-These cloud-native services provide foundational data for your SOC.
+By meticulously configuring these Security Groups, you create a robust instance-level firewalling system that strictly controls the communication pathways within and out of your VPC, a cornerstone of your lab's security.
 
 AWS CloudTrail:
 
