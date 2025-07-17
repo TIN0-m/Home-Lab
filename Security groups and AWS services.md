@@ -1,21 +1,23 @@
 # Security Groups and AWS services
 
+## Security Groups
+
 The Security Groups act as a gatekeeper right in front of the EC2 instances. It inspects every single piece of network traffic trying to reach or leave that instance and decides whether to allow or deny it based on a set of rules you define.
 **Here's a breakdown of their characteristics:**
 
-## Instance-Level Control
+### Instance-Level Control
 The Security Groups are associated directly with each of the subnets that are in the VPC. This gives you granular control over each specific instance's traffic as the Subnets have the overal instances that are being used.
 
-## Inbound Traffic and Outbound Traffic
+### Inbound Traffic and Outbound Traffic
 By adding rules to allow and deny any connections and specifying which ports can do this adheres to the **principle of least privilege**, which is a core security best practice.
 
-## Stateful
+### Stateful
 This is a very important characteristic. Security Groups are stateful. This means if you allow an inbound connection (e.g., SSH on port 22), the return traffic for that connection is automatically allowed back out, even if you don't have an explicit outbound rule for it. Similarly, if you allow an outbound connection (e.g., an instance initiating a web request on port 443), the return traffic for that request is automatically allowed back in. This simplifies rule management significantly.
 
-## Rule Evaluation
+### Rule Evaluation
 When an instance has multiple Security Groups associated with it, all the rules from all associated Security Groups are aggregated to form one logical set of rules. AWS evaluates all these rules before deciding whether to allow the traffic. There's no specific order of precedence for rules within a Security Group, as all allow rules are considered.
 
-## Security Groups in the Lab
+### Security Groups in the Lab
 These are the Security groups that are being implemented into the lab
 
 **JumpBox Security Group:**        
@@ -30,39 +32,133 @@ Allows inbound domain traffic from Active Directory and outbound traffic for age
 **Wazuh Security Group:**      
 Allows inbound agent communication from your endpoints and outbound communication for alerts to Tines or external services.
 
-By meticulously configuring these Security Groups, a robust instance-level firewalling system that strictly controls the communication pathways within and out of the VPC is created.
+**By meticulously configuring these Security Groups, a robust instance-level firewalling system that strictly controls the communication pathways within and out of the VPC is created.**
 
-## AWS CloudTrail:
+## AWS Services
+The AWS services are there to provide with extra security measures. By combining these native services with the tools i have chosen (Wazuh, TheHive, Tines), it creates a comprehensive environment capable of robust detection, analysis, and response.
 
-Purpose: The definitive record of all API activity within your AWS account. Who did what, when, and from where. Crucial for detecting unauthorized configuration changes, privilege escalation, or resource manipulation.
+AWS CloudTrail
+What it is:
+AWS CloudTrail is a service that records API calls and related events made by users, roles, or AWS services in your AWS account. Essentially, it's an audit log of all actions that happen in your AWS environment. Every time someone logs into the AWS console, runs a command via the AWS CLI, or an AWS service (like an EC2 instance) makes an API call, CloudTrail logs it.
 
-Configuration: Enabled account-wide, logs sent to a dedicated S3 bucket (soc-lab-cloudtrail-logs-yourid).
 
-Integration: Wazuh is configured to poll this S3 bucket for real-time ingestion and analysis of cloud control plane events.
 
-## VPC Flow Logs:
+How it works:
 
-Purpose: Captures detailed IP traffic information for network interfaces within your VPC. Think of it as NetFlow for your AWS network. Essential for network anomaly detection, traffic analysis, and identifying suspicious connections.
+Event Capture: CloudTrail automatically captures management events (actions like launching an EC2 instance, creating an S3 bucket, modifying a security group, changing IAM permissions). You can also configure it to capture data events (higher volume events like S3 object-level API activity or Lambda function invocations).
 
-Configuration: Enabled on the soc-lab-vpc, logs sent to a dedicated S3 bucket (soc-lab-vpc-flow-logs-yourid) or CloudWatch Log Group.
 
-Integration: Wazuh is configured to ingest these logs, providing crucial network-level context for investigations.
+Event History: CloudTrail provides a 90-day event history in the console for free, allowing you to quickly look up recent activities.
 
-## AWS GuardDuty (Highly Recommended for Advanced Detections):
+Trails: For long-term retention, analysis, and automation, you create a "trail." A trail delivers copies of your CloudTrail events to an Amazon S3 bucket for durable storage. You can also send events to Amazon CloudWatch Logs for near real-time monitoring and alerting.
 
-Purpose: An intelligent, managed threat detection service that continuously monitors your AWS accounts for malicious activity and unauthorized behavior. It uses machine learning, anomaly detection, and integrated threat intelligence.
 
-Configuration: Simply enable it in your AWS account.
 
-Integration: GuardDuty findings can be automatically sent to CloudWatch Events, which can then trigger a Lambda function to push to Wazuh or directly into Tines, enriching your SIEM with high-fidelity, AWS-specific threat intelligence.
+Integrity Validation: CloudTrail can enable log file integrity validation, using hashing and digital signatures to ensure that your log files haven't been tampered with after they were delivered to S3.
 
-## IAM Roles & Policies (The Gatekeepers of Access)
-Purpose: Defines granular permissions for EC2 instances to interact with other AWS services. This prevents instances from having overly permissive credentials.
+Insights Events: CloudTrail can also generate "Insights events" which highlight unusual activity patterns, such as spikes in API call volume or error rates that deviate from a baseline.
 
-Key Roles:
+Why it's crucial for your SOC Lab:
 
-Wazuh-S3-Reader-Role: Attached to the Wazuh Manager EC2 instance, granting it s3:GetObject and s3:ListBucket permissions only on the specific S3 buckets where CloudTrail and VPC Flow Logs are stored.
+Forensics and Incident Response: If a breach occurs, CloudTrail logs are your go-to source to answer critical questions: "Who launched that suspicious instance?", "When was that security group modified?", "Which IAM user deleted the critical database?"
 
-Tines-AWS-Responder-Role (Optional): If Tines is configured to perform automated response actions (e.g., isolating an EC2 instance, revoking temporary credentials), it would need a role with the absolute minimum necessary permissions for those specific actions.
+Compliance: Many regulatory frameworks require detailed audit trails of activity. CloudTrail helps meet these requirements.
 
-Principle of Least Privilege (PoLP): Every IAM role and associated policy adheres strictly to PoLP, ensuring no component has more permissions than it absolutely needs to function.
+Operational Troubleshooting: Debugging why a service isn't working or why a user can't access a resource.
+
+Threat Detection: Unusual API calls (e.g., attempts to disable CloudTrail logging itself, creating users from an unusual IP, accessing sensitive services) can be indicators of compromise. You feed these logs into your Wazuh Manager for analysis and correlation with other log sources.
+
+
+Amazon GuardDuty: Intelligent Threat Detection 🚨
+What it is:
+Amazon GuardDuty is a managed threat detection service that continuously monitors your AWS accounts and workloads for malicious activity and unauthorized behavior. It uses machine learning, anomaly detection, and integrated threat intelligence (from AWS and third-party partners) to identify potential threats.
+
+How it works:
+
+Continuous Monitoring: Once enabled, GuardDuty continuously analyzes data from several AWS log sources:
+
+AWS CloudTrail events (management and data events): For API activity.
+
+VPC Flow Logs: For network traffic metadata.
+
+DNS logs: For DNS queries.
+
+Kubernetes audit logs: For EKS cluster activity.
+
+EBS volume data: For malware scanning.
+
+Threat Intelligence & Machine Learning: GuardDuty applies a combination of pre-built threat intelligence feeds (known malicious IPs, domains) and machine learning models. It builds a baseline of "normal" behavior in your account.
+
+
+Finding Generation: When it detects suspicious activity (e.g., an EC2 instance communicating with a known command-and-control server, unusual API calls, cryptocurrency mining activity, port scanning, unauthorized access attempts), it generates a security finding.
+
+Findings Delivery: These findings are delivered to the GuardDuty console, AWS Security Hub, and Amazon EventBridge (formerly CloudWatch Events). EventBridge allows you to automate responses (e.g., send the finding to TheHive for case management or to Tines for automated remediation).
+
+
+Why it's crucial for your SOC Lab:
+
+Automated Threat Detection: GuardDuty is "always on" and provides immediate alerts without you needing to deploy or manage any agents or infrastructure on your own.
+
+Broad Coverage: It covers a wide range of potential threats across EC2, S3, RDS, IAM, EKS, and more.
+
+Reduced Noise: Its ML models help reduce false positives by learning your environment's typical behavior.
+
+Quick Identification of IOCs: It can quickly identify Indicators of Compromise (IOCs) based on its threat intelligence.
+
+Augments your SIEM: While your Wazuh SIEM is great for endpoint logs, GuardDuty provides a vital layer of cloud infrastructure-level threat detection, complementing your SIEM by giving it higher-level security findings.
+
+AWS VPC Flow Logs: The "Traffic Cop" of Your Network 🚦
+What it is:
+VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your Virtual Private Cloud (VPC). It's like a traffic recorder for your network, logging metadata about every connection.
+
+How it works:
+
+Capture Scope: You can enable flow logs at the VPC, subnet, or individual Elastic Network Interface (ENI) level.
+
+Traffic Types: You can choose to log accepted traffic, rejected traffic, or all traffic.
+
+Metadata Capture: For each network flow, a log record is created containing metadata such as:
+
+Source IP address and port (srcaddr, srcport)
+
+Destination IP address and port (dstaddr, dstport)
+
+Protocol (protocol)
+
+Number of packets and bytes transferred (packets, bytes)
+
+Start and end time of the flow (start, end)
+
+Action (action: ACCEPT or REJECT)
+
+VPC ID, subnet ID, ENI ID (vpc-id, subnet-id, interface-id)
+
+Log Destinations: Flow log data can be published to:
+
+Amazon CloudWatch Logs: For near real-time monitoring, alarming, and quick analysis using CloudWatch Logs Insights.
+
+Amazon S3: For long-term archival and big data analysis using tools like Amazon Athena.
+
+Amazon Kinesis Data Firehose: For streaming to other destinations.
+
+Why it's crucial for your SOC Lab:
+
+Network Visibility: Provides deep insights into who is talking to whom, on what ports, and how much data is being transferred within your VPC and with external networks.
+
+Security Monitoring: Crucial for detecting:
+
+Unauthorized access attempts: Rejected connections to sensitive ports.
+
+Port scanning: Many rejected connections from a single source to multiple ports.
+
+Data exfiltration: Large outbound transfers to unusual destinations.
+
+Malicious C2 communication: Connections to known bad IPs/domains.
+
+Policy violations: Instances communicating with unauthorized internal or external systems.
+
+Troubleshooting: Essential for diagnosing connectivity issues, misconfigured security groups, or route table problems.
+
+Compliance & Audit: Provides a detailed audit trail of network activity.
+
+Integration with SIEM: You'd feed these VPC Flow Logs into your Wazuh Manager to correlate network activity with endpoint and API logs, giving you a holistic view of potential incidents.
