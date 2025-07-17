@@ -97,3 +97,5 @@ Your primary tool for generating realistic attack data.
 
 It provides a structured way to simulate specific MITRE ATT&CK techniques, allowing me to test the detection capabilities in Limacharlie and Wazuh, and the automated responses in Tines.
 
+<a href ="https://github.com/TIN0-m/Home-Lab/blob/main/Network_Architecture.md"><img src="https://img.shields.io/badge/-Next%20Section-FF0000?&style=for-the-badge&logoColor=white" /><a/>
+
