@@ -58,5 +58,5 @@ Analysts use TheHive to review the automatically created cases, investigate furt
 Managed incident lifecycle, documented investigation.
 Analyst Feedback/Refinement: Based on investigations, analysts might refine detection rules in Limacharlie or Wazuh, or improve automation playbooks in Tines.
 
-<a href ="https://github.com/TIN0-m/Home-Lab/blob/main/Network_Architecture.md"><img src="https://img.shields.io/badge/-Next%20Section-FF0000?&style=for-the-badge&logoColor=white" /><a/>
+<a href ="https://github.com/TIN0-m/Home-Lab/blob/main/Deployment-Guide.md"><img src="https://img.shields.io/badge/-Next%20Section-FF0000?&style=for-the-badge&logoColor=white" /><a/>
 
