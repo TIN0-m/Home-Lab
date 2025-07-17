@@ -1,311 +1,186 @@
-Phase 1: AWS Account Preparation ⚙️
-Sign Up for AWS & Set Up Billing Alarms (Crucial!):
-
-If you don't have an AWS account, sign up at aws.amazon.com.
-
-Set up a billing alarm: Go to CloudWatch -> Alarms -> Create alarm. Select "Billing" metric "EstimatedCharges" and set a threshold (e.g., $5 USD). Configure it to notify you via email or SMS. This is your primary safeguard against unexpected costs.
-
-Select Your AWS Region:
-
-In the AWS Management Console, look at the top right corner. Ensure you select "Europe (Frankfurt) eu-central-1" or "Africa (Cape Town) eu-west-1" if available and you prefer local. For this guide, I'll use eu-west-1. Consistency in region is important.
-
-Create an EC2 Key Pair:
-
-Go to EC2 dashboard.
-
-In the left navigation pane, under "Network & Security," click "Key Pairs."
-
-Click "Create key pair."
-
-Name: soc-lab-keypair
-
-Key pair type: RSA
-
-Private key file format: .pem
-
-Click "Create key pair."
-
-Download the .pem file immediately. Keep it secure; you'll need it to connect to your instances via SSH/RDP.
-
-Phase 2: AWS VPC Network Infrastructure Setup 🌐
-This is the backbone of your lab. We'll build the VPC, subnets, route tables, and NAT Gateway.
-
-Create Your Virtual Private Cloud (VPC):
-
-Go to the VPC dashboard.
-
-In the left navigation pane, click "Your VPCs."
-
-Click "Create VPC."
-
-Name tag: SOC-Lab-VPC
-
-IPv4 CIDR block: 10.0.0.0/16 (This gives you a large, private IP range for all your resources).
-
-Leave other settings as default.
-
-Click "Create VPC."
-
-Create Subnets:
-
-In the VPC dashboard, click "Subnets."
-
-Click "Create subnet."
-
-Repeat this process four times for the following subnets. Ensure you select your SOC-Lab-VPC for each.
-
-Name tag: SOC-Lab-Public-Subnet
-
-Availability Zone: Choose one (e.g., eu-west-1a).
-
-IPv4 CIDR block: 10.0.1.0/24
-
-Name tag: SOC-Lab-Enterprise-Subnet
-
-Availability Zone: Use the same AZ as your Public Subnet (e.g., eu-west-1a) for simplicity in a lab.
-
-IPv4 CIDR block: 10.0.10.0/24
-
-Name tag: SOC-Lab-SOC-Tooling-Subnet
-
-Availability Zone: Same AZ (e.g., eu-west-1a).
-
-IPv4 CIDR block: 10.0.20.0/24
-
-Name tag: SOC-Lab-Management-Subnet
-
-Availability Zone: Same AZ (e.g., eu-west-1a).
-
-IPv4 CIDR block: 10.0.30.0/24
-
-Click "Create subnet" after configuring each one.
-
-Create and Attach an Internet Gateway (IGW):
-
-In the VPC dashboard, click "Internet Gateways."
-
-Click "Create internet gateway."
-
-Name tag: SOC-Lab-IGW
-
-Click "Create internet gateway."
-
-Once created, select it and click "Actions" -> "Attach to VPC."
-
-Select your SOC-Lab-VPC from the dropdown.
-
-Click "Attach internet gateway."
-
-Create Route Tables:
-
-In the VPC dashboard, click "Route Tables."
-
-a. Create Public Route Table:
-
-Click "Create route table."
-
-Name tag: SOC-Lab-Public-RT
-
-VPC: Select SOC-Lab-VPC.
-
-Click "Create route table."
-
-Select SOC-Lab-Public-RT. Go to the "Routes" tab -> "Edit routes."
-
-Click "Add route."
-
-Destination: 0.0.0.0/0 (this means "all internet traffic")
-
-Target: Select "Internet Gateway" and choose your SOC-Lab-IGW.
-
-Click "Save changes."
-
-Go to the "Subnet associations" tab -> "Edit subnet associations."
-
-Select SOC-Lab-Public-Subnet.
-
-Click "Save associations."
-
-b. Create Private Route Table:
-
-Click "Create route table."
-
-Name tag: SOC-Lab-Private-RT
-
-VPC: Select SOC-Lab-VPC.
-
-Click "Create route table."
-
-Do NOT add the 0.0.0.0/0 route yet. We'll do that after the NAT Gateway.
-
-Go to the "Subnet associations" tab -> "Edit subnet associations."
-
-Select SOC-Lab-Enterprise-Subnet, SOC-Lab-SOC-Tooling-Subnet, and SOC-Lab-Management-Subnet.
-
-Click "Save associations."
-
-Create NAT Gateway:
-
-In the VPC dashboard, click "NAT Gateways."
-
-Click "Create NAT gateway."
-
-Name tag: SOC-Lab-NAT-GW
-
-Subnet: Select SOC-Lab-Public-Subnet (the NAT GW must be in a public subnet).
-
-Connectivity Type: Public.
-
-Elastic IP allocation ID: Click "Allocate an Elastic IP address" (this gives it a static public IP).
-
-Click "Create NAT gateway." This might take a few minutes to become available.
-
-Update Private Route Table to Use NAT Gateway:
-
-Once the NAT Gateway status is "Available" (check in the NAT Gateway section), go back to "Route Tables" in the VPC dashboard.
-
-Select SOC-Lab-Private-RT. Go to the "Routes" tab -> "Edit routes."
-
-Click "Add route."
-
-Destination: 0.0.0.0/0
-
-Target: Select "NAT Gateway" and choose your SOC-Lab-NAT-GW.
-
-Click "Save changes."
-
-Phase 3: AWS Security Groups (Firewalls for Instances) 🔒
-We'll create the necessary Security Groups (SGs) to control traffic to and from your EC2 instances.
-
-Create Security Groups:
-
-Go to the EC2 dashboard.
-
-In the left navigation pane, under "Network & Security," click "Security Groups."
-
-Click "Create security group."
-
-Repeat this for each SG listed below. Ensure you select your SOC-Lab-VPC for each.
-
-a. SOC-Lab-JumpBox-SG (Critical for Initial Access)
-
-Description: Allows secure RDP/SSH access to the Jump Box.
-
-Inbound rules:
-
-Type: RDP (Port 3389)
-
-Source: "My IP" (AWS will auto-detect your current public IP. If your IP changes, you'll need to update this, or use a CIDR for your home network).
-
-Add another rule if using Linux Jump Box: Type: SSH (Port 22), Source: "My IP".
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - this is temporary, we'll refine it later.
+# Deployment Guide
+##### This is a step by step guide to how the VPC was set up and all the components it has have been set up.
+
+## AWS Account Preparation
+
+1. #### If you don't have an AWS account, sign up at aws.amazon.com.
+   
+2. #### Select Your AWS Region:
+In the AWS Management Console, look at the top right corner. Ensure you select "Africa (Cape Town) " if available and you prefer local. For this guide, I'll use eu-west-1. Consistency in region is important.
+
+3. #### Create an EC2 Key Pair:
+3.1   - Go to EC2 dashboard.     
+3.2   - In the left navigation pane, under "Network & Security," click "Key Pairs."     
+3.3   - Click "Create key pair."      
+3.4   - Name: "Something suitable"     
+3.5   - Key pair type: RSA      
+3.6   - Private key file format: .pem     
+3.7   - Click "Create key pair."     
+3.8   - Download the .pem file immediately. Keep it secure; you'll need it to connect to your instances via SSH/RDP.     
+
+4. ## AWS VPC Network Infrastructure Setup
+**Creating the Virtual Private Cloud (VPC):**        
+4.1 - Go to the VPC dashboard.    
+4.2 - In the left navigation pane, click "Your VPCs."     
+4.3 - Click "Create VPC."     
+4.4 - Name tag: Lab     
+4.5 - IPv4 CIDR block: 10.0.0.0/16 (This gives you a large, private IP range for all your resources).     
+4.6 - Leave other settings as default.     
+4.7 - Click "Create VPC."     
+4.8 - Create Subnets:       
+4.9 - In the VPC dashboard, click "Subnets."      
+4.10 - Click "Create subnet."      
+
+5. ## Subnets Setup
+**Repeat this process four times for the following subnets.**
+
+5.1 - Name tag: Public-Subnet      
+5.2 - Availability Zone: Choose one (e.g., eu-west-1a).     
+5.3 - IPv4 CIDR block: 10.0.1.0/24     
+
+**For the rest of the subnets please ensure that the IPv4 CIDR blocks are set as follows:**
+- Coperate Network : 10.0.10.0/24
+- SOC Hub          : 10.0.20.0/24
+- Management       : 10.0.30.0/24
+
+6. ## Internet Gateway Setup
+
+6.1 - In the VPC dashboard, click "Internet Gateways."     
+6.2 - Click "Create internet gateway."     
+6.3 - Name tag: SOC-Lab-IGW       
+6.4 - Click "Create internet gateway."       
+6.5 - Once created, select it and click "Actions" -> "Attach to VPC."     
+6.6 - Select your SOC-Lab-VPC from the dropdown.      
+6.7 - Click "Attach internet gateway."      
+
+7. ## Create Route Tables:
+**Repeat this twice for the Private and Public route tables** 
+
+7.1 - In the VPC dashboard, click "Route Tables."   
+7.2 - Create Public Route Table:    
+7.3 - Click "Create route table."    
+7.4 - Name tag: SOC-Lab-Public-RT    
+7.5 - VPC: Select SOC-Lab-VPC.    
+7.6 - Click "Create route table."     
+7.7 - Select SOC-Lab-Public-RT. Go to the "Routes" tab -> "Edit routes."     
+7.8 - Click "Add route."      
+7.9 - Destination: 0.0.0.0/0 (this means "all internet traffic")     
+7.10 - Target: Select "Internet Gateway" and choose your SOC-Lab-IGW.    
+7.11 - Click "Save changes."      
+7.12 - Go to the "Subnet associations" tab -> "Edit subnet associations."    
+7.13 - Select SOC-Lab-Public-Subnet.     
+7.14 - Click "Save associations."      
+
+**For the Private route table please take note of the following:**       
+- Do NOT add the 0.0.0.0/0 route yet. We'll do that after the NAT Gateway.     
+- Select SOC-Lab-Enterprise-Subnet, SOC-Lab-SOC-Tooling-Subnet, and SOC-Lab-Management-Subnet.        
+
+
+8. ## Create NAT Gateway:
+
+8.1 - In the VPC dashboard, click "NAT Gateways."     
+8.2 - Click "Create NAT gateway."     
+8.3 - Name tag: SOC-Lab-NAT-GW      
+8.4 - Subnet: Select SOC-Lab-Public-Subnet (the NAT GW must be in a public subnet).      
+8.5 - Connectivity Type: Public.      
+8.6 - Elastic IP allocation ID: Click "Allocate an Elastic IP address" (this gives it a static public IP).     
+8.7 - Click "Create NAT gateway." This might take a few minutes to become available.     
+8.8 - Update Private Route Table to Use NAT Gateway:     
+8.9 - Once the NAT Gateway status is "Available" (check in the NAT Gateway section), go back to "Route Tables" in the VPC dashboard.     
+**This is the part we update the route table for the Private route table**
+8.10 - Select SOC-Lab-Private-RT. Go to the "Routes" tab -> "Edit routes."     
+8.11 - Click "Add route."     
+8.12 - Destination: 0.0.0.0/0     
+8.13 - Target: Select "NAT Gateway" and choose your SOC-Lab-NAT-GW.     
+8.14 - Click "Save changes."      
+
+9. ## Security Groups
+**Repeat this twice for each of the Security Groups**
+9.1 - Create Security Groups:
+9.2 - Go to the EC2 dashboard.
+9.3 - In the left navigation pane, under "Network & Security," click "Security Groups."
+9.4 - Click "Create security group."
+9.5 - SOC-Lab-JumpBox-SG (Critical for Initial Access)
+9.6 - Description: Allows secure RDP/SSH access to the Jump Box.
+9.7 - Inbound rules:
+- Type: RDP (Port 3389)
+- Source: "My IP".
+- Add another rule if using Linux Jump Box: Type: SSH (Port 22), Source: "My IP".
+9.8 - Outbound rules:
+All traffic (0.0.0.0/0) to All (::/0) - this is temporary, we'll refine it later.
 
 b. SOC-Lab-AD-DC-SG
+9.7 - Inbound rules:
 
-Description: Security Group for Active Directory Domain Controller.
-
-Inbound rules:
-
-Type: RDP (Port 3389), Source: SOC-Lab-JumpBox-SG (select by SG ID).
-
-Type: LDAP (Port 389), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-
-Type: LDAPS (Port 636), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-
-Type: Kerberos (Port 88), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-
-Type: DNS (Port 53), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-
-Later, you'll add rules from SOC Tooling SGs if they need to query AD.
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
+Type: RDP (Port 3389)
+Source: SOC-Lab-JumpBox-SG (select by SG ID).
+Type: LDAP (Port 389)
+Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
+Type: LDAPS (Port 636)
+Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
+Type: Kerberos (Port 88)
+Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
+Type: DNS (Port 53)
+Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
+9.8 - Outbound rules: 
+All traffic (0.0.0.0/0) to All (::/0) - refine later.
 
 c. SOC-Lab-Win-Endpoint-SG
 
-Description: Security Group for Windows Endpoints.
-
-Inbound rules:
-
-Type: RDP (Port 3389), Source: SOC-Lab-JumpBox-SG.
-
-Type: DNS (Port 53), Source: SOC-Lab-AD-DC-SG.
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
-
-d. SOC-Lab-Lin-Server-SG (If including Linux Server)
-
-Description: Security Group for Linux Server.
-
-Inbound rules:
-
-Type: SSH (Port 22), Source: SOC-Lab-JumpBox-SG.
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
+9.7 - Inbound rules:
+Type: RDP (Port 3389)
+Source: SOC-Lab-JumpBox-SG.
+Type: DNS (Port 53)
+Source: SOC-Lab-AD-DC-SG.
+9.8 - Outbound rules: 
+All traffic (0.0.0.0/0) to All (::/0) - refine later.
 
 e. SOC-Lab-Wazuh-Manager-SG
-
 Description: Security Group for Wazuh Manager components.
-
-Inbound rules:
-
-Type: SSH (Port 22), Source: SOC-Lab-JumpBox-SG.
-
-Type: Custom TCP (Port 1514 - Wazuh agent registration), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-
-Type: Custom TCP (Port 55000 - Wazuh agent communication), Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-
-Type: Custom TCP (Port 9200 - OpenSearch/Elasticsearch API), Source: SOC-Lab-Tines-SG (you'll create this later).
-
-Type: HTTPS (Port 443 - Kibana Web UI), Source: SOC-Lab-JumpBox-SG.
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
+9.7 - Inbound rules:
+Type: SSH (Port 22)
+Source: SOC-Lab-JumpBox-SG.
+Type: Custom TCP (Port 1514 - Wazuh agent registration)
+Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
+Type: Custom TCP (Port 55000 - Wazuh agent communication)
+Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
+Type: Custom TCP (Port 9200 - OpenSearch/Elasticsearch API)
+Source: SOC-Lab-Tines-SG (you'll create this later).
+Type: HTTPS (Port 443 - Kibana Web UI)
+Source: SOC-Lab-JumpBox-SG.
+9.8 - Outbound rules:
+All traffic (0.0.0.0/0) to All (::/0) - refine later.
 
 f. SOC-Lab-TheHive-SG
 
-Description: Security Group for TheHive.
+9.7 - Inbound rules:
+Type: SSH (Port 22)
+Source: SOC-Lab-JumpBox-SG.
+Type: Custom TCP (Port 9000 - TheHive Web UI)
+Source: SOC-Lab-JumpBox-SG and SOC-Lab-Tines-SG (for Tines to connect).
+9.8 - Outbound rules:
+All traffic (0.0.0.0/0) to All (::/0) - refine later.
 
-Inbound rules:
+g. SOC-Lab-Tines-SG 
 
-Type: SSH (Port 22), Source: SOC-Lab-JumpBox-SG.
+9.7 - Inbound rules:
+Type: SSH (Port 22)
+Source: SOC-Lab-JumpBox-SG.
+Type: HTTPS (Port 443 or specific Tines webhook port, e.g., 8080)
+Source: SOC-Lab-Wazuh-Manager-SG.
+9.8 - Outbound rules:
+All traffic (0.0.0.0/0) to All (::/0) - refine later.
 
-Type: Custom TCP (Port 9000 - TheHive Web UI), Source: SOC-Lab-JumpBox-SG and SOC-Lab-Tines-SG (for Tines to connect).
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
-
-g. SOC-Lab-Tines-SG (If self-hosting Tines)
-
-Description: Security Group for Tines.
-
-Inbound rules:
-
-Type: SSH (Port 22), Source: SOC-Lab-JumpBox-SG.
-
-Type: HTTPS (Port 443 or specific Tines webhook port, e.g., 8080), Source: SOC-Lab-Wazuh-Manager-SG.
-
-If using Limacharlie Cloud Platform's direct webhook, you might need to allow HTTPS from 0.0.0.0/0 on a specific Tines webhook port, but this is less secure. Better to route through an authenticated proxy or use Tines cloud which handles this.
-
-Outbound rules: All traffic (0.0.0.0/0) to All (::/0) - refine later.
-
-Phase 4: Launching EC2 Instances (Servers) 🖥️
+## Phase 4: Launching EC2 Instances (Servers) 🖥️
 Now we'll launch your virtual servers in their respective subnets.
-
 Create IAM Role for Wazuh Manager (for AWS Log Ingestion):
-
 Go to IAM dashboard.
-
 In the left navigation pane, click "Roles."
-
 Click "Create role."
-
 Trusted entity type: AWS service.
-
 Use case: EC2. Click "Next."
-
 Permissions policies: Search for and attach AmazonS3ReadOnlyAccess. (In a production environment, you'd create a custom policy allowing read access only to specific S3 buckets where logs are stored). Click "Next."
-
 Role name: Wazuh-S3-Reader-Role
-
 Click "Create role."
 
 Launch EC2 Instances (Repeat for each type):
@@ -484,7 +359,7 @@ Storage: 30 GiB.
 
 Click "Launch instance."
 
-Phase 5: Initial Access & Internal Networking 🔌
+## Phase 5: Initial Access & Internal Networking 🔌
 Now that your servers are running, we'll connect to them and set up basic internal communication.
 
 Connect to Your Management Jump Box:
@@ -591,17 +466,8 @@ Follow the official TheHive documentation for installation. This typically invol
 
 Verify: Access TheHive web UI from your Jump Box's web browser (using TheHive's private IP, usually port 9000/HTTP or 443/HTTPS) to confirm it's running. Complete the initial setup wizard.
 
-Set Up Tines (Cloud or Self-Hosted):
+Set Up Tines
 
-Option A (Recommended - Tines Cloud):
-
-Go to tines.com and sign up for their free/trial cloud instance.
-
-Familiarize yourself with creating "Stories" and "Agents."
-
-Get the Webhook URL for an incoming HTTP Agent in Tines; you'll use this for integration.
-
-Option B (Self-Hosted - Advanced):
 
 Connect to Tines (Linux) from Jump Box via SSH.
 
@@ -638,106 +504,6 @@ Add the AWS module configuration to pull logs from your CloudTrail and VPC Flow 
 Restart the Wazuh Manager service: sudo systemctl restart wazuh-manager.
 
 Verify: Check Wazuh Kibana dashboard for ingested CloudTrail and VPC Flow Logs.
-
-Phase 7: SOC Tool Integration & Automation 🔗
-This is where the magic happens – connecting your tools for a seamless incident response workflow.
-
-Wazuh to Tines Alerting:
-
-Connect to Wazuh-Manager via SSH.
-
-Configure the Wazuh webhook integration. Add a new integration block in ossec.conf that points to your Tines webhook URL. You'll need to specify what alerts (e.g., level 10 and higher) should be sent.
-
-XML
-
-<integration>
-  <name>custom-webhook</name>
-  <level>10</level>
-  <api_key>YOUR_TINES_API_KEY_IF_NEEDED</api_key> <url>YOUR_TINES_WEBHOOK_URL</url>
-  <extra_args>
-    <alert_format>json</alert_format>
-  </extra_args>
-</integration>
-Restart Wazuh Manager.
-
-Limacharlie to Tines Alerting:
-
-Log into your Limacharlie Cloud Platform console.
-
-Go to "Detections" or "Outputs."
-
-Create a new output that sends alerts to a Webhook.
-
-Paste your Tines webhook URL here. Configure which types of detections you want to forward (e.g., high-fidelity detections).
-
-Tines Playbooks (Orchestration):
-
-Log into your Tines instance/cloud console.
-
-Create a new "Story" (Playbook).
-
-Agent 1: Incoming Webhook (HTTP Agent): Configure this agent to listen for alerts from Wazuh and Limacharlie.
-
-Agent 2: TheHive Create Case:
-
-Add an action to call TheHive's API to create a new case.
-
-You'll need TheHive's API key (generated in TheHive) and its private IP/URL.
-
-Map the incoming alert data from Wazuh/Limacharlie to TheHive case fields (title, description, observables).
-
-Optional Agents:
-
-Threat Intelligence Enrichment: Add an agent to query VirusTotal (requires a VirusTotal API key) for hashes/IPs from the alert.
-
-Active Directory Response: Add an agent (e.g., SSH Agent or PowerShell Remoting Agent if Tines supports it directly or via a proxy) to connect to your AD-DC and execute commands (e.g., disable user suspect_user). Ensure Tines has necessary credentials securely stored.
-
-Limacharlie Response: Add an agent to call Limacharlie's API to perform actions like isolate_host on a compromised endpoint.
-
-TheHive Configuration:
-
-Log into TheHive web UI.
-
-Configure Responders if you want to integrate Cortex (for automated analysis) or other external tools.
-
-Familiarize yourself with creating cases, adding observables, and managing tasks.
-
-Phase 8: Attack Simulation & Validation 😈
-Time to test your SOC!
-
-Prepare Atomic Red Team:
-
-Connect to your Win-Endpoint-01 or Win-Endpoint-02 from Jump Box.
-
-Install the Atomic Red Team PowerShell module.
-
-Download the Atomic Red Team atoms (Invoke-AtomicTest).
-
-Do not run everything at once! Start small.
-
-Run a Simple Atomic Test:
-
-Example: Execute a simple command to create a suspicious file or run a common PowerShell technique.
-
-PowerShell
-
-# Example: T1059.001 - PowerShell Command Line
-Invoke-AtomicTest T1059.001 -ShowDetailsBrief -CheckPrereqs -GetPrereqs -Execute
-Validate Detections:
-
-Immediately check your Limacharlie dashboard for new alerts from the endpoint.
-
-Check your Wazuh Kibana dashboard for new alerts.
-
-Verify Alert Flow to Tines: Log into Tines and check the "Events" or "Activity" feed to confirm it received the alerts from Limacharlie and Wazuh.
-
-Verify Case Creation in TheHive: Log into TheHive and confirm a new case was created by Tines based on the alert.
-
-Test Response Actions:
-
-If you configured an automated response (e.g., "disable user in AD" or "isolate host in Limacharlie"), trigger that action in Tines (or manually simulate it).
-
-Verify the outcome (e.g., log into AD to confirm user status, check Limacharlie console for host isolation).
 
 
 <a href ="https://github.com/TIN0-m/Home-Lab/blob/main/Security%20groups%20and%20AWS%20services.md"><img src="https://img.shields.io/badge/-Next%20Section-FF0000?&style=for-the-badge&logoColor=white" /><a/>
