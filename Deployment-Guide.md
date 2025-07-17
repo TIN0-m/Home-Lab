@@ -170,103 +170,112 @@ In the AWS Management Console, look at the top right corner. Ensure you select "
 - Type: SSH (Port 22)     
 - Source: JumpBox Security Group.     
 - Type: HTTPS (Port 443 or specific Tines webhook port, e.g., 8080)     
-- Source: Wazuh Security Group.     
-9.6 - **Outbound rules:**        
-- All traffic (0.0.0.0/0) to All (::/0) - refine later.    
+- Source: Wazuh Security Group.      
+9.6 - **Outbound rules:**         
+- All traffic (0.0.0.0/0) to All (::/0) - refine later.       
 
-## Launching IAM Dashboard 
+## Launching IAM Dashboard          
 
-10.1 - Go to IAM dashboard.
-10.2 - In the left navigation pane, click "Roles."
-10.3 - Click "Create role."
-10.4 - Trusted entity type: AWS service.
-10.5 - Use case: EC2. Click "Next."
-10.6 - Permissions policies: Search for and attach AmazonS3ReadOnlyAccess. (In a production environment, you'd create a custom policy allowing read access only to specific S3 buckets where logs are stored). Click "Next."
-10.7 - Role name: Wazuh-S3-Reader-Role
-10.8 - Click "Create role."
+10.1 - Go to IAM dashboard.          
+10.2 - In the left navigation pane, click "Roles."           
+10.3 - Click "Create role."           
+10.4 - Trusted entity type: AWS service.         
+10.5 - Use case: EC2. Click "Next."        
+10.6 - Permissions policies: Search for and attach AmazonS3ReadOnlyAccess. (In a production environment, you'd create a custom policy allowing read access only to specific S3 buckets where logs are stored). Click "Next."           
+10.7 - Role name: Wazuh-S3-Reader-Role         
+10.8 - Click "Create role."          
 
-## Launch EC2 Instances
-Go to EC2 dashboard.
-Click "Launch instances."
+## Launch EC2 Instances      
+11.1 - Go to EC2 dashboard.           
+11.2 - Click "Launch instances."         
 
-### Management Jump Box:
-Name: Management-Jump-Box
-AMI: Choose a Windows Server AMI (e.g., "Microsoft Windows Server 2022 Base"). This makes RDP easier for other Windows machines.
-Instance type: t3.medium (or t3.small to save cost, but medium is more responsive).
-Key pair: Select soc-lab-keypair.
-Network settings:
-VPC: Select SOC-Lab-VPC.
-Subnet: Select SOC-Lab-Management-Subnet.
-Auto-assign public IP: Enable (the Jump Box needs a public IP for you to connect initially).
-Firewall (security groups): Select "Select an existing security group" and choose SOC-Lab-JumpBox-SG.
-Storage: 30 GiB (default is usually fine).
-Click "Launch instance."
+### Management Jump Box:              
+11.3 - Name: Management-Jump-Box           
+11.4 - AMI: Windows Server AMI          
+11.5 - Instance type: t3.medium         
+11.6 - Key pair: lab-keypair.          
 
-### Active Directory 
-Name: AD-DC
-AMI: Windows Server AMI (e.g., "Microsoft Windows Server 2022 Base").
-Instance type: t3.medium (AD requires a bit more resources).
-Key pair: Select soc-lab-keypair.
-Network settings:
-VPC: Select SOC-Lab-VPC.
-Subnet: Select SOC-Lab-Enterprise-Subnet.
-Auto-assign public IP: Disable.
-Firewall (security groups): Select SOC-Lab-AD-DC-SG.
-Storage: 50 GiB (recommended for AD).
-Click "Launch instance."
+**Network settings:**
+11.7 - VPC: Lab VPC.      
+11.8 - Subnet: Management Subnet.       
+11.9 - Auto-assign public IP: Enable.        
+11.10 - Firewall (security groups): Select an existing security group and choose Jumpbox Security Group.        
+
+11.11 - Storage: 30 GiB      
+11.12 - Click "Launch instance."        
+
+### Active Directory                
+11.3 - Name: Active Directory
+11.4 - AMI: Windows Server AMI.      
+11.5 - Instance type: t3.medium        
+11.6 - Key pair: lab-keypair.        
+
+**Network settings:**         
+11.7 - VPC: Lab VPC.         
+11.8 - Subnet: Coperate Subnet.       
+11.9 - Auto-assign public IP: Disable.          
+11.10 - Firewall (security groups): Select an existing security group and choose Active Directory Security Group.          
+11.11 - Storage: 50 GiB       
+11.12 - Click "Launch instance."          
 
 ### Windows Endpoints (x2):
-Name: Win-Endpoint-01, then repeat for Win-Endpoint-02.
-AMI: Windows Client AMI (e.g., "Windows 10/11" if available, or "Windows Server 2019/2022 Base" as a fallback).
-Instance type: t3.small or t3.micro.
-Key pair: Select soc-lab-keypair.
-Network settings:
-VPC: Select SOC-Lab-VPC.
-Subnet: Select SOC-Lab-Enterprise-Subnet.
-Auto-assign public IP: Disable.
-Firewall (security groups): Select SOC-Lab-Win-Endpoint-SG.
-Storage: 30 GiB.
-Click "Launch instance."
+11.3 - Name: Win-Endpoint-01, then repeat for Win-Endpoint-02.          
+11.4 - AMI: Windows Client AMI.         
+11.5 - Instance type: t3.small.          
+11.6 - Key pair: lab-keypair.         
 
-### Wazuh Manager:
-Name: Wazuh-Manager
-AMI: Ubuntu Server LTS (e.g., "Ubuntu Server 22.04 LTS").
-Instance type: t3.large (Wazuh with OpenSearch needs decent RAM/CPU).
-Key pair: Select soc-lab-keypair.
-Network settings:
-VPC: Select SOC-Lab-VPC.
-Subnet: Select SOC-Lab-SOC-Tooling-Subnet.
-Auto-assign public IP: Disable.
-Firewall (security groups): Select SOC-Lab-Wazuh-Manager-SG.
-Advanced details: IAM instance profile: Select Wazuh-S3-Reader-Role.
-Storage: 100 GiB (for logs).
-Click "Launch instance."
+**Network settings:**         
+11.7 - VPC: Lab VPC.            
+11.8 - Subnet: Coperate Subnet.          
+11.9 - Auto-assign public IP: Disable.          
+11.10 - Firewall (security groups): Select an existing security group and choose Endpoint Security Group.           
+11.11 - Storage: 30 GiB.           
+11.12 - Click "Launch instance."           
+
+### Wazuh Manager:       
+11.3 - Name: Wazuh-Manager         
+11.4 - AMI: Ubuntu Server LTS          
+11.5 - Instance type: t3.large            
+11.6 - Key pair: Select soc-lab-keypair.       
+
+**Network settings:**            
+11.7 - VPC: Lab VPC.           
+11.8 - Subnet: SOC hub Subnet.         
+11.9 - Auto-assign public IP: Disable.          
+Firewall (security groups): Select an existing security group choose Wazuh Security Group.            
+
+**Advanced details:**
+11.10 - IAM instance profile: Select Wazuh-S3-Reader-Role.         
+11.11 - Storage: 100 GiB (for logs).        
+11.11 - Click "Launch instance."       
 
 ### TheHive:
-Name: TheHive
-AMI: Ubuntu Server LTS.
-Instance type: t3.large (for TheHive + its DB).
-Key pair: Select soc-lab-keypair.
-Network settings:
-VPC: Select SOC-Lab-VPC.
-Subnet: Select SOC-Lab-SOC-Tooling-Subnet.
-Auto-assign public IP: Disable.
-Firewall (security groups): Select SOC-Lab-TheHive-SG.
-Storage: 60 GiB.
-Click "Launch instance."
+11.3 - Name: TheHive            
+11.4 - AMI: Ubuntu Server LTS.        
+11.5 - Instance type: t3.large.         
+11.6 - Key pair: lab-keypair.          
 
-### Tines 
-Name: Tines
-AMI: Ubuntu Server LTS.
-Instance type: t3.medium or t3.large (check Tines requirements).
-Key pair: Select soc-lab-keypair.
-Network settings:
-VPC: Select SOC-Lab-VPC.
-Subnet: Select SOC-Lab-SOC-Tooling-Subnet.
-Auto-assign public IP: Disable.
-Firewall (security groups): Select SOC-Lab-Tines-SG.
-Storage: 30 GiB.
-Click "Launch instance."
+**Network settings:**            
+11.7 - VPC: Lab VPC.          
+11.8 - Subnet: SOC Hub Subnet.          
+11.9 - Auto-assign public IP: Disable.            
+11.10 - Firewall (security groups): Select an existing security group and choose The Hive Security Group.         
+11.11 - Storage: 60 GiB.       
+11.12 - Click "Launch instance."          
+
+### Tines       
+11.3 - Name: Tines      
+11.4 - AMI: Ubuntu Server LTS.       
+11.5 - Instance type: t3.medium     
+11.6 - Key pair: lab-keypair.         
+
+**Network settings:**        
+11.7 - VPC: Lab VPC.       
+11.8 - Subnet: SOC hub Subnet.     
+11.9 - Auto-assign public IP: Disable.     
+11.10 - Firewall (security groups): Select an existing security group and choose Tines Security Group.         
+11.11 - Storage: 30 GiB.     
+11.12 - Click "Launch instance."     
 
 ## Phase 5: Initial Access & Internal Networking 🔌
 Now that your servers are running, we'll connect to them and set up basic internal communication.
