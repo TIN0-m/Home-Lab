@@ -104,3 +104,6 @@ Tines playbooks, when configured for automated actions (e.g., isolating a host v
 ### A.17 Information Security Aspects of Business Continuity Management
 **A.17.2.1 Availability of Information Processing Facilities:**    
 While a single-region lab, the use of AWS services provides inherent underlying high availability compared to on-premises solutions, supporting the continuity principle.
+
+<a href ="https://github.com/TIN0-m/Home-Lab/blob/main/Network_Architecture.md"><img src="https://img.shields.io/badge/-Next%20Section-FF0000?&style=for-the-badge&logoColor=white" /><a/>
+
