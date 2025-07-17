@@ -87,7 +87,7 @@ In the AWS Management Console, look at the top right corner. Ensure you select "
 8.7 - Click "Create NAT gateway." This might take a few minutes to become available.     
 8.8 - Update Private Route Table to Use NAT Gateway:     
 8.9 - Once the NAT Gateway status is "Available" (check in the NAT Gateway section), go back to "Route Tables" in the VPC dashboard.     
-**This is the part we update the route table for the Private route table**
+**This is the part we update the route table for the Private route table**       
 8.10 - Select SOC-Lab-Private-RT. Go to the "Routes" tab -> "Edit routes."     
 8.11 - Click "Add route."     
 8.12 - Destination: 0.0.0.0/0     
@@ -96,36 +96,39 @@ In the AWS Management Console, look at the top right corner. Ensure you select "
 
 9. ## Security Groups
 **Repeat this twice for each of the Security Groups**
-9.1 - Create Security Groups:
-9.2 - Go to the EC2 dashboard.
-9.3 - In the left navigation pane, under "Network & Security," click "Security Groups."
-9.4 - Click "Create security group."
-9.5 - SOC-Lab-JumpBox-SG (Critical for Initial Access)
-9.6 - Description: Allows secure RDP/SSH access to the Jump Box.
-9.7 - Inbound rules:
-- Type: RDP (Port 3389)
-- Source: "My IP".
-- Add another rule if using Linux Jump Box: Type: SSH (Port 22), Source: "My IP".
+9.1 - Create Security Groups:      
+9.2 - Go to the EC2 dashboard.       
+9.3 - In the left navigation pane, under "Network & Security," click "Security Groups."     
+9.4 - Click "Create security group."     
+9.5 # JumpBox Security Group       
+    
+9.6 - Inbound rules:      
+- Type: RDP (Port 3389)    
+- Source: "My IP".     
+- Add another rule if using Linux Jump Box: Type: SSH (Port 22), Source: "My IP".    
+  
 9.8 - Outbound rules:
-All traffic (0.0.0.0/0) to All (::/0) - this is temporary, we'll refine it later.
+- All traffic (0.0.0.0/0) to All (::/0) - this is temporary, we'll refine it later.     
 
-b. SOC-Lab-AD-DC-SG
-9.7 - Inbound rules:
+##### Active Directory Security Group
+9.7 - **Inbound rules:**
 
-Type: RDP (Port 3389)
-Source: SOC-Lab-JumpBox-SG (select by SG ID).
-Type: LDAP (Port 389)
-Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-Type: LDAPS (Port 636)
-Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-Type: Kerberos (Port 88)
-Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-Type: DNS (Port 53)
-Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-9.8 - Outbound rules: 
-All traffic (0.0.0.0/0) to All (::/0) - refine later.
+- Type: RDP (Port 3389)
+- Source: JumpBox Security Group (select by SG ID).
+- Type: LDAP (Port 389)
+- Source: Coperate Subnet CIDR (10.0.10.0/24).
+- Type: LDAPS (Port 636)
+- Source: Coperate Subnet CIDR (10.0.10.0/24).
+- Type: Kerberos (Port 88)
+- Source: Coperate Subnet CIDR (10.0.10.0/24).
+- Type: DNS (Port 53)
+- Source: Coperate Subnet CIDR (10.0.10.0/24).
 
-c. SOC-Lab-Win-Endpoint-SG
+9.8 - **Outbound rules:** 
+
+- All traffic (0.0.0.0/0) to All (::/0) - refine later.
+
+##### Endpoint Security Group
 
 9.7 - Inbound rules:
 Type: RDP (Port 3389)
@@ -135,8 +138,8 @@ Source: SOC-Lab-AD-DC-SG.
 9.8 - Outbound rules: 
 All traffic (0.0.0.0/0) to All (::/0) - refine later.
 
-e. SOC-Lab-Wazuh-Manager-SG
-Description: Security Group for Wazuh Manager components.
+##### Wazuh Security Group
+
 9.7 - Inbound rules:
 Type: SSH (Port 22)
 Source: SOC-Lab-JumpBox-SG.
@@ -151,7 +154,7 @@ Source: SOC-Lab-JumpBox-SG.
 9.8 - Outbound rules:
 All traffic (0.0.0.0/0) to All (::/0) - refine later.
 
-f. SOC-Lab-TheHive-SG
+##### The Hive Security Group
 
 9.7 - Inbound rules:
 Type: SSH (Port 22)
@@ -161,7 +164,7 @@ Source: SOC-Lab-JumpBox-SG and SOC-Lab-Tines-SG (for Tines to connect).
 9.8 - Outbound rules:
 All traffic (0.0.0.0/0) to All (::/0) - refine later.
 
-g. SOC-Lab-Tines-SG 
+##### Tines Security Group
 
 9.7 - Inbound rules:
 Type: SSH (Port 22)
