@@ -10,7 +10,9 @@ personal sandbox for mastering the entire incident response lifecycle, from the 
 
 4. Deployment Guide
    
-5. Security groups and AWS services 
+5. Security groups and AWS services
+
+6.Mitre Attack and ISO27001 principles  
 
 7. Usage & Scenarios
 
