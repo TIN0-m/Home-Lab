@@ -37,39 +37,26 @@ Allows inbound agent communication from your endpoints and outbound communicatio
 ## AWS Services
 The AWS services are there to provide with extra security measures. By combining these native services with the tools i have chosen (Wazuh, TheHive, Tines), it creates a comprehensive environment capable of robust detection, analysis, and response.
 
-AWS CloudTrail
-What it is:
-AWS CloudTrail is a service that records API calls and related events made by users, roles, or AWS services in your AWS account. Essentially, it's an audit log of all actions that happen in your AWS environment. Every time someone logs into the AWS console, runs a command via the AWS CLI, or an AWS service (like an EC2 instance) makes an API call, CloudTrail logs it.
+### AWS CloudTrail
+
+- AWS CloudTrail is an audit log of all actions that happen in the AWS environment. Every time someone logs into the AWS console, runs a command via the AWS CLI, or an AWS service makes an API call, CloudTrail logs it automatically and captures management events. It provides a 90-day event history in the console, allowing you to quickly look up recent activities. It can also enable log file integrity validation, using hashing and digital signatures to ensure that your log files haven't been tampered with.
+
+#### Why it's crucial: 
+
+- **Forensics and Incident Response:**    
+If a breach occurs, CloudTrail logs are the go-to source to answer critical questions: "Who launched that suspicious instance?", "When was that security group modified?".
+
+- **Compliance:**     
+Many regulatory frameworks require detailed audit trails of activity. CloudTrail helps meet these requirements.
+
+- **Operational Troubleshooting:**     
+ Debugging why a service isn't working or why a user can't access a resource.
+
+- **Threat Detection:**      
+ Unusual API calls can be indicators of compromise. These logs are fed into the Wazuh Manager for analysis and correlation with other log sources.
 
 
-
-How it works:
-
-Event Capture: CloudTrail automatically captures management events (actions like launching an EC2 instance, creating an S3 bucket, modifying a security group, changing IAM permissions). You can also configure it to capture data events (higher volume events like S3 object-level API activity or Lambda function invocations).
-
-
-Event History: CloudTrail provides a 90-day event history in the console for free, allowing you to quickly look up recent activities.
-
-Trails: For long-term retention, analysis, and automation, you create a "trail." A trail delivers copies of your CloudTrail events to an Amazon S3 bucket for durable storage. You can also send events to Amazon CloudWatch Logs for near real-time monitoring and alerting.
-
-
-
-Integrity Validation: CloudTrail can enable log file integrity validation, using hashing and digital signatures to ensure that your log files haven't been tampered with after they were delivered to S3.
-
-Insights Events: CloudTrail can also generate "Insights events" which highlight unusual activity patterns, such as spikes in API call volume or error rates that deviate from a baseline.
-
-Why it's crucial for your SOC Lab:
-
-Forensics and Incident Response: If a breach occurs, CloudTrail logs are your go-to source to answer critical questions: "Who launched that suspicious instance?", "When was that security group modified?", "Which IAM user deleted the critical database?"
-
-Compliance: Many regulatory frameworks require detailed audit trails of activity. CloudTrail helps meet these requirements.
-
-Operational Troubleshooting: Debugging why a service isn't working or why a user can't access a resource.
-
-Threat Detection: Unusual API calls (e.g., attempts to disable CloudTrail logging itself, creating users from an unusual IP, accessing sensitive services) can be indicators of compromise. You feed these logs into your Wazuh Manager for analysis and correlation with other log sources.
-
-
-Amazon GuardDuty: Intelligent Threat Detection 🚨
+### Amazon GuardDuty: Intelligent Threat Detection 
 What it is:
 Amazon GuardDuty is a managed threat detection service that continuously monitors your AWS accounts and workloads for malicious activity and unauthorized behavior. It uses machine learning, anomaly detection, and integrated threat intelligence (from AWS and third-party partners) to identify potential threats.
 
@@ -107,7 +94,7 @@ Quick Identification of IOCs: It can quickly identify Indicators of Compromise (
 
 Augments your SIEM: While your Wazuh SIEM is great for endpoint logs, GuardDuty provides a vital layer of cloud infrastructure-level threat detection, complementing your SIEM by giving it higher-level security findings.
 
-AWS VPC Flow Logs: The "Traffic Cop" of Your Network 🚦
+### AWS VPC Flow Logs: The "Traffic Cop" of Your Network 
 What it is:
 VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your Virtual Private Cloud (VPC). It's like a traffic recorder for your network, logging metadata about every connection.
 
