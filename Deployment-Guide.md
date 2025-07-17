@@ -92,87 +92,87 @@ In the AWS Management Console, look at the top right corner. Ensure you select "
 8.11 - Click "Add route."     
 8.12 - Destination: 0.0.0.0/0     
 8.13 - Target: Select "NAT Gateway" and choose your SOC-Lab-NAT-GW.     
-8.14 - Click "Save changes."      
+8.14 - Click "Save changes."          
 
-9. ## Security Groups
-**Repeat this twice for each of the Security Groups**
-9.1 - Create Security Groups:      
-9.2 - Go to the EC2 dashboard.       
-9.3 - In the left navigation pane, under "Network & Security," click "Security Groups."     
-9.4 - Click "Create security group."     
-9.5 # JumpBox Security Group       
+9. ## Security Groups          
+**Repeat this twice for each of the Security Groups**       
+9.1 - Create Security Groups:        
+9.2 - Go to the EC2 dashboard.          
+9.3 - In the left navigation pane, under "Network & Security," click "Security Groups."            
+9.4 - Click "Create security group."       
+
+#### JumpBox Security Group        
     
-9.6 - Inbound rules:      
-- Type: RDP (Port 3389)    
-- Source: "My IP".     
-- Add another rule if using Linux Jump Box: Type: SSH (Port 22), Source: "My IP".    
+9.5 - **Inbound rules:**         
+- Type: RDP (Port 3389)            
+- Source: "My IP".      
+- Add another rule if using Linux Jump Box: Type: SSH (Port 22), Source: "My IP".             
   
-9.8 - Outbound rules:
-- All traffic (0.0.0.0/0) to All (::/0) - this is temporary, we'll refine it later.     
+9.6 - **Outbound rules:**       
+- All traffic (0.0.0.0/0) to All (::/0) - this is temporary, we'll refine it later.             
 
-##### Active Directory Security Group
-9.7 - **Inbound rules:**
+#### Active Directory Security Group         
+9.5 - **Inbound rules:**       
+- Type: RDP (Port 3389)        
+- Source: JumpBox Security Group (select by SG ID).          
+- Type: LDAP (Port 389)         
+- Source: Coperate Subnet CIDR (10.0.10.0/24).         
+- Type: LDAPS (Port 636)        
+- Source: Coperate Subnet CIDR (10.0.10.0/24).       
+- Type: Kerberos (Port 88)      
+- Source: Coperate Subnet CIDR (10.0.10.0/24).     
+- Type: DNS (Port 53)      
+- Source: Coperate Subnet CIDR (10.0.10.0/24).     
 
+9.6 - **Outbound rules:**      
+- All traffic (0.0.0.0/0) to All (::/0) - refine later     
+
+#### Endpoint Security Group     
+
+9.5 - **Inbound rules:**     
 - Type: RDP (Port 3389)
-- Source: JumpBox Security Group (select by SG ID).
-- Type: LDAP (Port 389)
-- Source: Coperate Subnet CIDR (10.0.10.0/24).
-- Type: LDAPS (Port 636)
-- Source: Coperate Subnet CIDR (10.0.10.0/24).
-- Type: Kerberos (Port 88)
-- Source: Coperate Subnet CIDR (10.0.10.0/24).
-- Type: DNS (Port 53)
-- Source: Coperate Subnet CIDR (10.0.10.0/24).
+- Source: JumpBox Security Group.       
+- Type: DNS (Port 53)      
+- Source: Active Directory Security group.        
+  
+9.6 - **Outbound rules:**        
+-All traffic (0.0.0.0/0) to All (::/0) - refine later.      
 
-9.8 - **Outbound rules:** 
+#### Wazuh Security Group    
 
-- All traffic (0.0.0.0/0) to All (::/0) - refine later.
+9.5 - **Inbound rules:**       
+- Type: SSH (Port 22)       
+- Source: JumpBox Security Group.        
+- Type: Custom TCP (Port 1514 - Wazuh agent registration)      
+- Source: Coperate Subnet CIDR (10.0.10.0/24).        
+- Type: Custom TCP (Port 55000 - Wazuh agent communication)     
+- Source: Coperate Subnet CIDR (10.0.10.0/24).      
+- Type: Custom TCP (Port 9200 - OpenSearch/Elasticsearch API)      
+- Source: Tines Security Group (you'll create this later).     
+- Type: HTTPS (Port 443 - Kibana Web UI)     
+- Source: JumpBox Securrity Group.     
+9.6 - **Outbound rules:**      
+-All traffic (0.0.0.0/0) to All (::/0) - refine later.     
 
-##### Endpoint Security Group
+#### The Hive Security Group     
 
-9.7 - Inbound rules:
-Type: RDP (Port 3389)
-Source: SOC-Lab-JumpBox-SG.
-Type: DNS (Port 53)
-Source: SOC-Lab-AD-DC-SG.
-9.8 - Outbound rules: 
-All traffic (0.0.0.0/0) to All (::/0) - refine later.
+9.5 - **Inbound rules:**      
+- Type: SSH (Port 22)     
+- Source: JumpBox Security Group.     
+- Type: Custom TCP (Port 9000 - TheHive Web UI)    
+- Source: JumpBox Security Group and Tines Security Group.    
+9.6 - **Outbound rules:**    
+- All traffic (0.0.0.0/0) to All (::/0) - refine later.    
 
-##### Wazuh Security Group
+#### Tines Security Group     
 
-9.7 - Inbound rules:
-Type: SSH (Port 22)
-Source: SOC-Lab-JumpBox-SG.
-Type: Custom TCP (Port 1514 - Wazuh agent registration)
-Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-Type: Custom TCP (Port 55000 - Wazuh agent communication)
-Source: SOC-Lab-Enterprise-Subnet CIDR (10.0.10.0/24).
-Type: Custom TCP (Port 9200 - OpenSearch/Elasticsearch API)
-Source: SOC-Lab-Tines-SG (you'll create this later).
-Type: HTTPS (Port 443 - Kibana Web UI)
-Source: SOC-Lab-JumpBox-SG.
-9.8 - Outbound rules:
-All traffic (0.0.0.0/0) to All (::/0) - refine later.
-
-##### The Hive Security Group
-
-9.7 - Inbound rules:
-Type: SSH (Port 22)
-Source: SOC-Lab-JumpBox-SG.
-Type: Custom TCP (Port 9000 - TheHive Web UI)
-Source: SOC-Lab-JumpBox-SG and SOC-Lab-Tines-SG (for Tines to connect).
-9.8 - Outbound rules:
-All traffic (0.0.0.0/0) to All (::/0) - refine later.
-
-##### Tines Security Group
-
-9.7 - Inbound rules:
-Type: SSH (Port 22)
-Source: SOC-Lab-JumpBox-SG.
-Type: HTTPS (Port 443 or specific Tines webhook port, e.g., 8080)
-Source: SOC-Lab-Wazuh-Manager-SG.
-9.8 - Outbound rules:
-All traffic (0.0.0.0/0) to All (::/0) - refine later.
+9.5 - **Inbound rules:**     
+- Type: SSH (Port 22)     
+- Source: JumpBox Security Group.     
+- Type: HTTPS (Port 443 or specific Tines webhook port, e.g., 8080)     
+- Source: Wazuh Security Group.     
+9.6 - **Outbound rules:**        
+- All traffic (0.0.0.0/0) to All (::/0) - refine later.    
 
 ## Phase 4: Launching EC2 Instances (Servers) 🖥️
 Now we'll launch your virtual servers in their respective subnets.
