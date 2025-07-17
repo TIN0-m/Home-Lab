@@ -22,23 +22,7 @@ This is a very important characteristic. Security Groups are stateful. This mean
 ## 6. Rule Evaluation
 When an instance has multiple Security Groups associated with it, all the rules from all associated Security Groups are aggregated to form one logical set of rules. AWS evaluates all these rules before deciding whether to allow the traffic. There's no specific order of precedence for rules within a Security Group, as all allow rules are considered.
 
-
-7. Rule Criteria
-You define rules based on:
-
-Protocol: TCP, UDP, ICMP, or All Traffic.
-
-Port Range: Specific ports (e.g., 22 for SSH, 80 for HTTP, 443 for HTTPS) or a range of ports.
-
-Source/Destination:
-
-Individual IP addresses (e.g., 203.0.113.1/32)
-
-CIDR blocks (e.g., 192.168.1.0/24)
-
-Other Security Groups: A powerful feature! You can reference another Security Group as a source or destination, meaning "allow traffic from/to any instance that is associated with this other Security Group." This is incredibly useful for allowing communication between tiers (e.g., web server SG allows traffic to database server SG).
-
-Security Groups in Your SOC Lab
+## Security Groups in Your SOC Lab
 In your SOC Lab, Security Groups are critical:
 
 SG: SOC-Lab-JumpBox-SG: Allows inbound SSH (port 22) or RDP (port 3389) only from your whitelisted public IP address, and allows outbound SSH/RDP to your private instances.
@@ -51,7 +35,7 @@ SG: SOC-Lab-Wazuh-Manager-SG: Allows inbound agent communication (ports 1514, 55
 
 By meticulously configuring these Security Groups, you create a robust instance-level firewalling system that strictly controls the communication pathways within and out of your VPC, a cornerstone of your lab's security.
 
-AWS CloudTrail:
+## AWS CloudTrail:
 
 Purpose: The definitive record of all API activity within your AWS account. Who did what, when, and from where. Crucial for detecting unauthorized configuration changes, privilege escalation, or resource manipulation.
 
@@ -59,7 +43,7 @@ Configuration: Enabled account-wide, logs sent to a dedicated S3 bucket (soc-lab
 
 Integration: Wazuh is configured to poll this S3 bucket for real-time ingestion and analysis of cloud control plane events.
 
-VPC Flow Logs:
+## VPC Flow Logs:
 
 Purpose: Captures detailed IP traffic information for network interfaces within your VPC. Think of it as NetFlow for your AWS network. Essential for network anomaly detection, traffic analysis, and identifying suspicious connections.
 
@@ -67,7 +51,7 @@ Configuration: Enabled on the soc-lab-vpc, logs sent to a dedicated S3 bucket (s
 
 Integration: Wazuh is configured to ingest these logs, providing crucial network-level context for investigations.
 
-AWS GuardDuty (Highly Recommended for Advanced Detections):
+## AWS GuardDuty (Highly Recommended for Advanced Detections):
 
 Purpose: An intelligent, managed threat detection service that continuously monitors your AWS accounts for malicious activity and unauthorized behavior. It uses machine learning, anomaly detection, and integrated threat intelligence.
 
@@ -75,7 +59,7 @@ Configuration: Simply enable it in your AWS account.
 
 Integration: GuardDuty findings can be automatically sent to CloudWatch Events, which can then trigger a Lambda function to push to Wazuh or directly into Tines, enriching your SIEM with high-fidelity, AWS-specific threat intelligence.
 
-3.6. IAM Roles & Policies (The Gatekeepers of Access)
+## 3.6. IAM Roles & Policies (The Gatekeepers of Access)
 Purpose: Defines granular permissions for EC2 instances to interact with other AWS services. This prevents instances from having overly permissive credentials.
 
 Key Roles:
