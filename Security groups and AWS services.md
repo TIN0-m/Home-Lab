@@ -1,4 +1,4 @@
-## Security Groups and AWS services
+# Security Groups and AWS services
 How Security Groups Work as Firewalls
 Think of a Security Group as a bouncer or a gatekeeper right in front of your EC2 instance (or RDS database, Load Balancer, etc.). It inspects every single piece of network traffic trying to reach or leave that instance and decides whether to allow or deny it based on a set of rules you define.
 
