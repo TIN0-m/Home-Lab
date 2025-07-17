@@ -119,3 +119,5 @@ Interaction: Your Limacharlie agents on your EC2 instances connect securely to y
 - OS: Windows Server (for RDP to other Windows instances) or Linux (for SSH, with RDP client).
 - Single, secure entry point into the private network. This drastically reduces internet-facing attack surface.
 -Security Group (SOC-Lab-JumpBox-SG): EXTREMELY RESTRICTIVE. Inbound: Only allows SSH (22) or RDP (3389) from YOUR SPECIFIC PUBLIC IP ADDRESS (X.X.X.X/32). Outbound: RDP (3389) to Windows Endpoints/AD DC, SSH (22) to Linux Server/Wazuh/TheHive/Tines.
+
+<a href ="https://github.com/TIN0-m/Home-Lab/blob/main/Network_Architecture.md"><img src="https://img.shields.io/badge/-Next%20Section-FF0000?&style=for-the-badge&logoColor=white" /><a/>
