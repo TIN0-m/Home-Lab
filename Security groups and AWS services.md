@@ -1,25 +1,24 @@
 # Security Groups and AWS services
 
 The Security Groups act as a gatekeeper right in front of the EC2 instances. It inspects every single piece of network traffic trying to reach or leave that instance and decides whether to allow or deny it based on a set of rules you define.
-
 Here's a breakdown of their characteristics:
 
-## 1. Instance-Level Control
+## Instance-Level Control
 Security Groups are associated directly with an individual network interface, and by extension, the instance. This gives you granular control over each specific instance's traffic.
 
-## 2. Default Deny (Inbound)
+## Inbound Traffic
 When you create a new Security Group, by default, it denies all inbound traffic. You must explicitly add rules to allow any incoming connections. This adheres to the principle of least privilege by default, which is a core security best practice.
 
-## 3. Default Allow (Outbound)
+## Outbound Traffic
 Conversely, by default, a new Security Group typically allows all outbound traffic. While convenient, for a robust security posture like a SOC lab, you'll want to modify this to restrict outbound access to only what's necessary (e.g., only allowing HTTPS to specific update servers, or agent communication to your Wazuh Manager).
 
-## 4. Rules: Allow Only
+## Rules: Allow Only
 Security Group rules are always permissive (allow rules only). You cannot create a rule to explicitly "deny" traffic. If traffic doesn't match an "allow" rule, it's implicitly denied. This is a crucial difference from traditional firewalls and AWS Network ACLs, which can have explicit "deny" rules.
 
-## 5. Stateful 🧠
+## Stateful 🧠
 This is a very important characteristic. Security Groups are stateful. This means if you allow an inbound connection (e.g., SSH on port 22), the return traffic for that connection is automatically allowed back out, even if you don't have an explicit outbound rule for it. Similarly, if you allow an outbound connection (e.g., an instance initiating a web request on port 443), the return traffic for that request is automatically allowed back in. This simplifies rule management significantly.
 
-## 6. Rule Evaluation
+## Rule Evaluation
 When an instance has multiple Security Groups associated with it, all the rules from all associated Security Groups are aggregated to form one logical set of rules. AWS evaluates all these rules before deciding whether to allow the traffic. There's no specific order of precedence for rules within a Security Group, as all allow rules are considered.
 
 ## Security Groups in Your SOC Lab
