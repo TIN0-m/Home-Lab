@@ -15,7 +15,7 @@ This is a very important characteristic. Security Groups are stateful. This mean
 ## Rule Evaluation
 When an instance has multiple Security Groups associated with it, all the rules from all associated Security Groups are aggregated to form one logical set of rules. AWS evaluates all these rules before deciding whether to allow the traffic. There's no specific order of precedence for rules within a Security Group, as all allow rules are considered.
 
-## Security Groups in Your SOC Lab
+## Security Groups in the Lab
 These are the Security groups that are being implemented into the lab
 
 **JumpBox Security Group:**        
