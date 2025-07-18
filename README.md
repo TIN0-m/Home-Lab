@@ -54,7 +54,6 @@ This lab provides opportunity to showcase the following:
 
 # Tools and Components used :
 <div>
-    <img src="https://img.shields.io/badge/-Wireshark-1679A7?&style=for-the-badge&logo=Wireshark&logoColor=white" />
     <img src="https://img.shields.io/badge/-Wazuh-blue?&style=for-the-badge&logo=wazuh&logoColor=white" />
     <img src="https://img.shields.io/badge/-LimaCharlie-orange?&style=for-the-badge&logo=limacharlie&logoColor=white" />
     <img src="https://img.shields.io/badge/-TheHive-272E3F?&style=for-the-badge&logo=thehive&logoColor=white" />
@@ -65,9 +64,11 @@ This lab provides opportunity to showcase the following:
 </div>
 
 ## AWS VPC: 
+<img src="https://img.shields.io/badge/-AWS-FF9900?&style=for-the-badge&logo=amazonaws&logoColor=white" />
 This is where the entire simulated infrastructure will live. It will consist of subnets, security groups, routing, and access control lists to mimic a real corporate network, giving easy control and allow traffic observation.
 
-## Active Directory (Identity and Access Management):     
+## Active Directory (Identity and Access Management):
+<img src="https://img.shields.io/badge/-Windows%20Active%20Directory-0078D4?&style=for-the-badge&logo=microsoft&logoColor=white" />
 Critical for simulating a realistic enterprise environment. It will have a domain controller, user accounts, groups, and policies. This will allow me to:
 
 - Simulate user activity.
@@ -75,7 +76,8 @@ Critical for simulating a realistic enterprise environment. It will have a domai
 - Practice response actions.
 - Provide authentication.
 
-## Limacharlie (EDR and Foundational Telemetry):    
+## Limacharlie (EDR and Foundational Telemetry): 
+<img src="https://img.shields.io/badge/-LimaCharlie-orange?&style=for-the-badge&logo=limacharlie&logoColor=white" />
 This tool is for endpoint visibility and initial detection.
 
 Limacharlie's lightweight, robust agent provides extremely rich endpoint telemetry (process execution, network connections, file system changes, registry, etc.) far beyond what basic Windows Event Logs offer. It's purpose-built for threat detection and response at the endpoint level. It essentially replaces the need for a separate Sysmon agent as its data is similar but often more extensive and easier to consume.
@@ -83,6 +85,7 @@ Limacharlie's lightweight, robust agent provides extremely rich endpoint telemet
 When the Atomic Red Team attacks are ran, Limacharlie will be the primary sensor detecting these activities. Its rule engine allows me to write custom detections for ATT&CK techniques.
 
 ## Wazuh (SIEM and HIDS):
+<img src="https://img.shields.io/badge/-Wazuh-blue?&style=for-the-badge&logo=wazuh&logoColor=white" />
 This tool will work as a SIEM and Host Intrusion Detection System (HIDS).
 
 It's excellent for collecting, normalizing, and analyzing logs from diverse sources beyond just endpoints (e.g., Active Directory logs, AWS CloudTrail, VPC Flow Logs, firewall logs). It has a strong rule set for common attack patterns and compliance.
@@ -90,11 +93,13 @@ It's excellent for collecting, normalizing, and analyzing logs from diverse sour
 Limacharlie alerts can be forwarded to Wazuh for broader correlation, and Wazuh will also collect AD logs directly from the domain controller.
 
 ## TheHive (Case Management & Incident Response):
+<img src="https://img.shields.io/badge/-TheHive-272E3F?&style=for-the-badge&logo=thehive&logoColor=white" />
 This tool will be my central hub for the incident response process.
 
 It provides structure for investigations, allows analysts to collaborate, manage observables, and track the status of incidents from creation to closure. 
 
 ## Tines (Dedicated SOAR - Automation & Orchestration):
+<img src="https://img.shields.io/badge/-Tines-1996D7?&style=for-the-badge&logo=tines&logoColor=white" />
 This tool will be used for automating complex workflows. It allows you to create intricate playbooks that connect all your tools. Limacharlie and Wazuh will be configured to send alerts to Tines. Tines will then orchestrates actions like:
 
 - Automatically creating cases in TheHive.
@@ -103,7 +108,8 @@ This tool will be used for automating complex workflows. It allows you to create
 - Notifying team members.
 
 ## Atomic Red Team (Attack Simulation):
-Your primary tool for generating realistic attack data.
+<img src="https://img.shields.io/badge/-Atomic%20Red%20Team-D81E05?&style=for-the-badge&logo=redhat&logoColor=white" />
+The primary tool for generating realistic attack data.
 
 It provides a structured way to simulate specific MITRE ATT&CK techniques, allowing me to test the detection capabilities in Limacharlie and Wazuh, and the automated responses in Tines.
 
