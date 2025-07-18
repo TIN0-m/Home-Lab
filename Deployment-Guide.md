@@ -277,9 +277,9 @@ Firewall (security groups): Select an existing security group choose Wazuh Secur
 11.11 - Storage: 30 GiB.     
 11.12 - Click "Launch instance."     
 
-## Phase 5: Initial Access & Internal Networking 🔌
-Now that your servers are running, we'll connect to them and set up basic internal communication.
-Connect to Your Management Jump Box:
+## Initial Access and Internal Networking 
+
+12.1 - Connect to Your Management Jump Box:
 Go to EC2 dashboard -> "Instances."
 Select your Management-Jump-Box instance.
 For Windows Jump Box:
