@@ -279,23 +279,31 @@ Firewall (security groups): Select an existing security group choose Wazuh Secur
 
 ## Initial Access and Internal Networking 
 
-12.1 - Connect to Your Management Jump Box:
-Go to EC2 dashboard -> "Instances."
-Select your Management-Jump-Box instance.
-For Windows Jump Box:
-Click "Connect" -> "RDP client" -> "Get password."
-Browse to your soc-lab-keypair.pem file, click "Decrypt password." Copy the password.
-Download the Remote Desktop file and open it. Use the provided username (Administrator) and the decrypted password.
-For Linux Jump Box:
-Click "Connect" -> "SSH client."
-Copy the example SSH command (e.g., ssh -i "soc-lab-keypair.pem" ec2-user@<public-ip-address>).
-Open your terminal on your local machine, navigate to where your .pem file is, and paste/run the command.
-Retrieve Private IP Addresses of All Instances:
-While in the EC2 console (from your local machine), make a note of the Private IPv4 Address for every instance you just launched. You'll need these to connect from the Jump Box.
-Connect from Jump Box to Private Instances:
-From your Windows Jump Box: Use the Remote Desktop Connection application. Enter the Private IP Address of your AD-DC, Win-Endpoint-01, Win-Endpoint-02. Use the EC2 soc-lab-keypair.pem file to get their initial passwords (you'll set better ones later).
-From your Linux Jump Box: Use the ssh command with the .pem key for Linux servers and potentially install an RDP client (like Remmina) for Windows servers.
-Verify Connectivity: Try ping commands between instances (e.g., from Win-Endpoint-01 to AD-DC's private IP) to ensure basic network connectivity is working.
+12.1 - Connect to Your Management Jump Box:    
+12.2 - Go to EC2 dashboard -> "Instances."     
+12.3 - Select your Management-Jump-Box instance. 
+
+**For Windows Jump Box:**     
+12.4 - Click "Connect" -> "RDP client" -> "Get password."     
+12.5 - Browse to your soc-lab-keypair.pem file, click "Decrypt password." Copy the password.     
+12.6 - Download the Remote Desktop file and open it. Use the provided username (Administrator) and the decrypted password.    
+
+**For Linux Jump Box:**     
+12.7 - Click "Connect" -> "SSH client."      
+12.8 - Copy the example SSH command (e.g., ssh -i "soc-lab-keypair.pem" ec2-user@<public-ip-address>).      
+12.9 - Open your terminal on your local machine, navigate to where your .pem file is, and paste/run the command.      
+12.10 - Retrieve Private IP Addresses of All Instances:      
+12.11 - While in the EC2 console (from your local machine), make a note of the Private IPv4 Address for every instance you just launched. You'll need these to connect from the Jump Box.       
+
+### Connect from Jump Box to Private Instances:        
+12.12 -  **From your Windows Jump Box:**     
+12.12.1 - Use the Remote Desktop Connection application.      
+12.12.2 - Enter the Private IP Address of your AD-DC, Win-Endpoint-01, Win-Endpoint-02.      
+12.12.3 - Use the EC2 soc-lab-keypair.pem file to get their initial passwords.       
+
+12.13 - **From your Linux Jump Box:**      
+12.13.1 - Use the ssh command with the .pem key for Linux servers and potentially install an RDP client (like Remmina) for Windows servers.      
+12.13.2 - Verify Connectivity: Try ping commands between instances (e.g., from Win-Endpoint-01 to AD-DC's private IP) to ensure basic network connectivity is working.        
 
 ## Phase 6: Core Software Installation & Configuration 💻
 This is where you'll install the actual SOC tools and configure them to talk to each other.
