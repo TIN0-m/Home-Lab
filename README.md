@@ -53,6 +53,16 @@ This lab provides opportunity to showcase the following:
  Integrate AWS CloudTrail and GuardDuty findings into the SIEM, providing holistic visibility across the cloud control plane.
 
 # Tools and Components used :
+<div>
+    <img src="https://img.shields.io/badge/-Wireshark-1679A7?&style=for-the-badge&logo=Wireshark&logoColor=white" />
+    <img src="https://img.shields.io/badge/-Wazuh-blue?&style=for-the-badge&logo=wazuh&logoColor=white" />
+    <img src="https://img.shields.io/badge/-LimaCharlie-orange?&style=for-the-badge&logo=limacharlie&logoColor=white" />
+    <img src="https://img.shields.io/badge/-TheHive-272E3F?&style=for-the-badge&logo=thehive&logoColor=white" />
+    <img src="https://img.shields.io/badge/-AWS-FF9900?&style=for-the-badge&logo=amazonaws&logoColor=white" />
+    <img src="https://img.shields.io/badge/-Windows%20Active%20Directory-0078D4?&style=for-the-badge&logo=microsoft&logoColor=white" />
+    <img src="https://img.shields.io/badge/-Tines-1996D7?&style=for-the-badge&logo=tines&logoColor=white" />
+    <img src="https://img.shields.io/badge/-Atomic%20Red%20Team-D81E05?&style=for-the-badge&logo=redhat&logoColor=white" />
+</div>
 
 ## AWS VPC: 
 This is where the entire simulated infrastructure will live. It will consist of subnets, security groups, routing, and access control lists to mimic a real corporate network, giving easy control and allow traffic observation.
