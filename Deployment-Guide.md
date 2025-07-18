@@ -302,63 +302,46 @@ Firewall (security groups): Select an existing security group choose Wazuh Secur
 12.12.3 - Use the EC2 soc-lab-keypair.pem file to get their initial passwords.       
 
 12.13 - **From your Linux Jump Box:**      
-12.13.1 - Use the ssh command with the .pem key for Linux servers and potentially install an RDP client (like Remmina) for Windows servers.      
-12.13.2 - Verify Connectivity: Try ping commands between instances (e.g., from Win-Endpoint-01 to AD-DC's private IP) to ensure basic network connectivity is working.        
+12.13.1 - Use the ssh command with the .pem key for Linux servers.      
+12.13.2 - Verify Connectivity: Try ping commands between instances to ensure basic network connectivity is working.        
 
-## Phase 6: Core Software Installation & Configuration 💻
-This is where you'll install the actual SOC tools and configure them to talk to each other.
-Configure Active Directory Domain Controller (AD-DC):
-Connect to AD-DC from Jump Box.
-Open Server Manager.
-Click "Add Roles and Features."
-Select "Active Directory Domain Services" and "DNS Server."
-After installation, promote the server to a Domain Controller.
-Choose "Add a new forest."
-Root domain name: soclab.local (or a similar internal domain).
-Set a Directory Services Restore Mode (DSRM) password.
-Follow the prompts to complete the promotion. The server will restart.
-Crucial: Once AD is up, go to your Windows Endpoints and Linux Server (if Linux is part of the domain) and set their Primary DNS server to the private IP address of your AD-DC.
-Join Windows Endpoints to the Domain: From each Win-Endpoint, go to System Properties -> Computer Name -> Change -> Domain, and join soclab.local. Restart.
-Create a few test user accounts in Active Directory Users and Computers.
-Install Wazuh Stack (Wazuh-Manager):
-Connect to Wazuh-Manager (Linux) from Jump Box via SSH.
-Follow the official Wazuh documentation for installing the Wazuh Manager, OpenSearch (or Elasticsearch), and Kibana/Dashboards. This usually involves adding Wazuh/OpenSearch repositories, installing packages, and configuring initial passwords.
-*
-Verify: Access the Kibana dashboard from your Jump Box's web browser (using the Wazuh-Manager's private IP, port 443/HTTPS) to confirm it's running. Log in with your configured credentials.
-Install Wazuh Agents (AD-DC, Win-Endpoint-01, Win-Endpoint-02, Linux-Server):
-On the Wazuh-Manager server, generate agent keys for each endpoint.
-Connect to each endpoint from the Jump Box.
-Follow the official Wazuh documentation for installing agents on Windows and Linux.
-During installation, specify the private IP address of your Wazuh-Manager when prompted for the server IP.
-Verify: Check the Wazuh Manager dashboard (Kibana) to see if agents are "Active."
-Install Limacharlie Agents (AD-DC, Win-Endpoint-01, Win-Endpoint-02):
-Sign up for a free Limacharlie account (limacharlie.io) and create an "Organization."
-From the Limacharlie console, go to "Sensors" and get the installation command/script for Windows. It will include your organization ID and API key.
-Connect to your Windows instances from the Jump Box.
-Run the Limacharlie agent installation script (often a PowerShell command) on each Windows instance.
-Verify: Check your Limacharlie dashboard to see if sensors are connecting and reporting.
-Install TheHive (TheHive):
-Connect to TheHive (Linux) from Jump Box via SSH.
-Follow the official TheHive documentation for installation. This typically involves installing a Java Runtime Environment (JRE), setting up a database (like Elasticsearch or Cassandra), and then deploying TheHive.
-Verify: Access TheHive web UI from your Jump Box's web browser (using TheHive's private IP, usually port 9000/HTTP or 443/HTTPS) to confirm it's running. Complete the initial setup wizard.
-Set Up Tines
-Connect to Tines (Linux) from Jump Box via SSH.
-Follow the official Tines self-hosting documentation. This is more involved and might require Docker/Kubernetes.
-Once running, identify your Tines webhook URL.
-Configure AWS Logging Services (CloudTrail, VPC Flow Logs):
-Go to CloudTrail in the AWS Console.
-Ensure CloudTrail is enabled for all regions and logging to an S3 bucket. If you need to create a new trail, make sure it logs to a new S3 bucket (e.g., soc-lab-cloudtrail-logs-youruniqueid).
-Go to VPC -> "VPC Flow Logs."
-Click "Create flow log."
-Filter: All.
-Destination: Send to an S3 bucket. Choose to create a new S3 bucket (e.g., soc-lab-vpc-flow-logs-youruniqueid).
-Click "Create."
-IAM Role Adjustment: Go to IAM -> Roles -> Wazuh-S3-Reader-Role. Add permissions to read from these newly created S3 buckets for CloudTrail and VPC Flow Logs. Specifically, add s3:ListBucket and s3:GetObject on the specific resource ARNs of your new buckets.
-Wazuh AWS Module Configuration:
-Connect to Wazuh-Manager via SSH.
-Edit the ossec.conf file (usually /var/ossec/etc/ossec.conf).
-Add the AWS module configuration to pull logs from your CloudTrail and VPC Flow Logs S3 buckets. Refer to the Wazuh AWS Module documentation.
-Restart the Wazuh Manager service: sudo systemctl restart wazuh-manager.
-Verify: Check Wazuh Kibana dashboard for ingested CloudTrail and VPC Flow Logs.
+## Software Installation and Configuration.
+
+13.1 - Configure Active Directory:     
+13.2 - Connect to AD-DC from Jump Box.      
+13.3 - Open Server Manager.      
+13.4 - Click "Add Roles and Features."      
+13.5 - Select "Active Directory Domain Services" and "DNS Server."        
+13.6 - After installation, promote the server to a Domain Controller.       
+13.7 - Choose "Add a new forest."       
+13.8 - Root domain name: soclab.local (or a similar internal domain).          
+13.9 - Set a Directory Services Restore Mode (DSRM) password.       
+
+**Follow the prompts to complete the promotion. The server will restart.**         
+
+**Join Windows Endpoints to the Domain:**              
+13.10 - From each Win-Endpoint, go to System Properties -> Computer Name -> Change -> Domain, and join soclab.local. Restart.      
+13.11 - Install Wazuh Stack (Wazuh-Manager):           
+13.12 - Connect to Wazuh-Manager (Linux) from Jump Box via SSH.         
+**Follow the official Wazuh documentation for installing the Wazuh Manager, OpenSearch (or Elasticsearch), and Kibana/Dashboards.**         
+
+13.13 - Install Wazuh Agents (AD-DC, Win-Endpoint-01, Win-Endpoint-02, Linux-Server):        
+13.14 - On the Wazuh-Manager server, generate agent keys for each endpoint.        
+13.15 - Connect to each endpoint from the Jump Box.        
+
+**Install Limacharlie Agents (AD-DC, Win-Endpoint-01, Win-Endpoint-02):**         
+13.16 - Sign up for a free Limacharlie account (limacharlie.io) and create an "Organization."          
+13.17 - From the Limacharlie console, go to "Sensors" and get the installation command/script for Windows. It will include your organization ID and API key.       
+13.18 - Connect to your Windows instances from the Jump Box.          
+13.19 - Run the Limacharlie agent installation script (often a PowerShell command) on each Windows instance.          
+
+**Install TheHive (TheHive):**          
+13.20 - Connect to TheHive (Linux) from Jump Box via SSH.            
+**Follow the official TheHive documentation for installation. This typically involves installing a Java Runtime Environment (JRE), setting up a database (like Elasticsearch or Cassandra), and then deploying TheHive**        
+
+**Set Up Tines**           
+13.21 - Connect to Tines (Linux) from Jump Box via SSH.             
+**Follow the official Tines self-hosting documentation. This is more involved and might require Docker/Kubernetes.**           
+13.22 - Once running, identify your Tines webhook URL.           
 
 <a href ="https://github.com/TIN0-m/Home-Lab/blob/main/Security%20groups%20and%20AWS%20services.md"><img src="https://img.shields.io/badge/-Next%20Section-FF0000?&style=for-the-badge&logoColor=white" /><a/>
