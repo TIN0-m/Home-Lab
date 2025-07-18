@@ -18,7 +18,7 @@ personal sandbox for mastering the entire incident response lifecycle, from the 
 
 # 1. Introduction 
 
-Purpose:     
+### Purpose:     
 
 This repository details the architecture and deployment steps for an AWS-based Security Operations Center (SOC) lab. Its purpose is to provide a practical, hands-on environment to simulate cyberattacks, detect malicious activity, and practice incident response workflows using a suite of open-source and cloud-native security tools. It's my personal sandbox for mastering the entire incident response lifecycle, from the first byte of telemetry to automated containment and meticulous case management. 
 
