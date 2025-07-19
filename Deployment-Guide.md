@@ -40,6 +40,8 @@ https://github.com/user-attachments/assets/7af03112-cb34-4f10-a0c9-aae2de900bdd
 5. ## Subnets Setup
 **Repeat this process four times for the following subnets.**
 
+https://github.com/user-attachments/assets/637a4806-e256-4996-9ca1-d40a8ca2967e
+
 5.1 - In the VPC dashboard, click "Subnets."            
 5.2 - Click "Create subnet."                
 5.3 - Name tag: Public-Subnet       
