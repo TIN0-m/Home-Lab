@@ -10,7 +10,7 @@ In the AWS Management Console, look at the top right corner. Ensure you select "
 
 3. #### Create an EC2 Key Pair:
 
-https://github.com/user-attachments/assets/6fe080a4-d4e2-4153-a62b-6b4d968d8788
+https://github.com/user-attachments/assets/f79bf1eb-f265-4621-87f2-0cf00a47c52e
    
 3.1   - Go to EC2 dashboard.     
 3.2   - In the left navigation pane, under "Network & Security," click "Key Pairs."     
@@ -23,6 +23,9 @@ https://github.com/user-attachments/assets/6fe080a4-d4e2-4153-a62b-6b4d968d8788
 
 4. ## AWS VPC Network Infrastructure Setup
 **Creating the Virtual Private Cloud (VPC):**        
+
+https://github.com/user-attachments/assets/7af03112-cb34-4f10-a0c9-aae2de900bdd
+
 4.1 - Go to the VPC dashboard.    
 4.2 - In the left navigation pane, click "Your VPCs."     
 4.3 - Click "Create VPC."     
