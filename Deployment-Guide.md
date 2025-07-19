@@ -9,6 +9,9 @@
 In the AWS Management Console, look at the top right corner. Ensure you select "Africa (Cape Town) " if available and you prefer local. For this guide, I'll use eu-west-1. Consistency in region is important.
 
 3. #### Create an EC2 Key Pair:
+
+https://github.com/user-attachments/assets/6fe080a4-d4e2-4153-a62b-6b4d968d8788
+   
 3.1   - Go to EC2 dashboard.     
 3.2   - In the left navigation pane, under "Network & Security," click "Key Pairs."     
 3.3   - Click "Create key pair."      
