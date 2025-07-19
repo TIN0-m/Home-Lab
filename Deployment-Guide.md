@@ -40,8 +40,10 @@ https://github.com/user-attachments/assets/7af03112-cb34-4f10-a0c9-aae2de900bdd
 5. ## Subnets Setup
 **Repeat this process four times for the following subnets.**
 
-5.1 - Name tag: Public-Subnet      
-5.2 - Availability Zone: Choose one (e.g., eu-west-1a).     
+5.1 - In the VPC dashboard, click "Subnets."
+5.2 - Click "Create subnet."
+5.3 - Name tag: Public-Subnet      
+5.4 - Availability Zone: Choose one (e.g., eu-west-1a).     
 5.3 - IPv4 CIDR block: 10.0.1.0/24     
 
 **For the rest of the subnets please ensure that the IPv4 CIDR blocks are set as follows:**
