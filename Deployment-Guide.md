@@ -55,7 +55,7 @@ https://github.com/user-attachments/assets/637a4806-e256-4996-9ca1-d40a8ca2967e
 
 6. ## Internet Gateway Setup
 
-https://github.com/user-attachments/assets/2516cb86-9a75-4426-8474-07577421d3dd
+https://github.com/user-attachments/assets/bb6372a4-4a72-4104-9316-3072e74eb11c
 
 6.1 - In the VPC dashboard, click "Internet Gateways."     
 6.2 - Click "Create internet gateway."     
