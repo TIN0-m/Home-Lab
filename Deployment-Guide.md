@@ -32,10 +32,7 @@ https://github.com/user-attachments/assets/7af03112-cb34-4f10-a0c9-aae2de900bdd
 4.4 - Name tag: Lab     
 4.5 - IPv4 CIDR block: 10.0.0.0/16 (This gives you a large, private IP range for all your resources).     
 4.6 - Leave other settings as default.     
-4.7 - Click "Create VPC."     
-4.8 - Create Subnets:       
-4.9 - In the VPC dashboard, click "Subnets."      
-4.10 - Click "Create subnet."      
+4.7 - Click "Create VPC."         
 
 5. ## Subnets Setup
 **Repeat this process four times for the following subnets.**
